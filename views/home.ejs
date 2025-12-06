@@ -1,0 +1,28 @@
+<!-- views/home.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Proyectos</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Lista de Proyectos</h1>
+  <form action="/crear-proyecto" method="POST">
+    <label for="nombre">Nombre del Proyecto:</label>
+    <input type="text" id="nombre" name="nombre" required>
+    <label for="porcentaje_avance">Porcentaje de Avance:</label>
+    <input type="number" id="porcentaje_avance" name="porcentaje_avance" step="0.01" value="0.00" required>
+    <button type="submit">Crear Proyecto</button>
+  </form>
+
+  <ul>
+    <% proyectos.forEach(proyecto => { %>
+      <li><strong><%= proyecto.nombre %></strong> - <%= proyecto.porcentaje_avance %>%</li>
+    <% }); %>
+  </ul>
+
+  <a href="/">Volver al inicio</a> <!-- Enlace de vuelta a la página estática -->
+</body>
+</html>

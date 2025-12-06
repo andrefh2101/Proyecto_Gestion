@@ -1,0 +1,156 @@
+<!-- public/areas.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Áreas de Conocimiento</title>
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    .area-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      width: 200px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,.4);
+    }
+
+    .modal-content {
+      background: #fff;
+      width: 300px;
+      padding: 20px;
+      margin: 15% auto;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Áreas de Conocimiento</h1>
+
+  <div id="areas-lista"></div>
+
+  <button id="crearAreaBtn">Crear Área</button>
+
+  <!-- Modal -->
+  <div id="areaModal" class="modal">
+    <div class="modal-content">
+      <h3>Nueva Área</h3>
+
+      <form id="form-area">
+
+        <label>Área de Conocimiento:</label>
+        <select id="nombreArea" required></select>
+
+        <input type="hidden" id="proyectoID">
+
+        <button type="submit">Crear</button>
+      </form>
+
+      <button id="closeAreaModal">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    // Obtener ID del proyecto desde URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const proyectoId = urlParams.get("proyecto");
+
+    document.getElementById("proyectoID").value = proyectoId;
+
+    // Cargar áreas existentes
+    async function cargarAreas() {
+      const resp = await fetch(`/api/proyectos/${proyectoId}/areas`);
+      const areas = await resp.json();
+
+      const lista = document.getElementById("areas-lista");
+      lista.innerHTML = "";
+
+      if (areas.length === 0) {
+        lista.innerHTML = "<p>No hay áreas registradas.</p>";
+        return;
+      }
+
+      areas.forEach(area => {
+        const div = document.createElement("div");
+        div.classList.add("area-card");
+
+        div.innerHTML = `<h4>${area.nombre}</h4>`;
+        div.onclick = function () {
+          window.location.href = `/subcategorias.html?area=${area.id}`;
+        };
+
+        lista.appendChild(div);
+      });
+    }
+
+    cargarAreas();
+
+    // MODAL
+    const modal = document.getElementById("areaModal");
+    document.getElementById("closeAreaModal").onclick = () => modal.style.display = "none";
+
+    // Cargar áreas disponibles para el select
+    async function cargarAreasDisponibles() {
+      const resp = await fetch(`/api/proyectos/${proyectoId}/areas-disponibles`);
+      const disponibles = await resp.json();
+
+      const select = document.getElementById("nombreArea");
+      select.innerHTML = "";
+
+      if (disponibles.length === 0) {
+        select.innerHTML = `<option disabled>No hay áreas disponibles</option>`;
+        return;
+      }
+
+      disponibles.forEach(area => {
+  const option = document.createElement("option");
+  option.value = area.id;
+  option.textContent = area.nombre;
+  select.appendChild(option);
+});
+
+    }
+
+    // Abrir modal y cargar select
+    document.getElementById("crearAreaBtn").onclick = async () => {
+      await cargarAreasDisponibles();
+      modal.style.display = "block";
+    };
+
+    // Crear área
+    document.getElementById("form-area").onsubmit = async function(e) {
+      e.preventDefault();
+
+const tipo_id = document.getElementById("nombreArea").value;
+
+      const resp = await fetch('/api/areas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ tipo_id, proyecto_id: proyectoId })
+      });
+
+      if (resp.ok) {
+        modal.style.display = "none";
+        cargarAreas();
+      }
+    };
+  </script>
+
+  <a href="/proyectos">Volver a proyectos</a>
+</body>
+</html>

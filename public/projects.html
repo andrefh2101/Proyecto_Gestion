@@ -1,0 +1,182 @@
+<!-- public/projects.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Proyectos</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .project-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      width: 200px;
+      text-align: center;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista de Proyectos</h1>
+
+  <div id="proyectos-lista">
+    <!-- Los proyectos se mostrarán aquí dinámicamente -->
+  </div>
+
+  <button id="crearProyectoBtn">Crear Proyecto</button>
+
+  <!-- Modal para agregar un nuevo proyecto -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <h3>Crear Nuevo Proyecto</h3>
+      <form id="crear-proyecto-form" action="/api/proyectos" method="POST">
+        <label for="nombre">Nombre del Proyecto:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <button type="submit">Crear Proyecto</button>
+      </form>
+      <button id="closeModalBtn">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de éxito -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <h3>¡Proyecto Creado con Éxito!</h3>
+      <p>El proyecto se ha creado correctamente.</p>
+      <button id="closeSuccessModalBtn">Cerrar</button>
+    </div>
+  </div>
+
+  <a href="/">Volver al inicio</a>
+
+  <script>
+    // Mostrar proyectos al cargar la página
+    window.onload = async function() {
+      try {
+        const response = await fetch('/api/proyectos');
+        const proyectos = await response.json();
+        const lista = document.getElementById('proyectos-lista');
+        
+        if (proyectos.length === 0) {
+          lista.innerHTML = "<p>No hay proyectos disponibles.</p>";
+          return;
+        }
+
+        proyectos.forEach(proyecto => {
+  const div = document.createElement('div');
+  div.classList.add('project-card');
+
+  div.innerHTML = `
+    <h4>${proyecto.nombre}</h4>
+    <p>Avance: ${proyecto.porcentaje_avance}%</p>
+  `;
+
+  // 👉 Evento para redirigir a las áreas del proyecto
+  div.onclick = function () {
+    window.location.href = `/areas.html?proyecto=${proyecto.id}`;
+  };
+
+  lista.appendChild(div);
+});
+
+      } catch (err) {
+        console.error('Error al cargar los proyectos:', err);
+      }
+    };
+
+    // Abrir el modal de creación de proyecto
+    const modal = document.getElementById('myModal');
+    const btn = document.getElementById('crearProyectoBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+
+    btn.onclick = function() {
+      modal.style.display = 'block';
+    }
+
+    // Cerrar el modal de creación de proyecto
+    closeBtn.onclick = function() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    // Manejar el envío del formulario para crear un proyecto
+    const form = document.getElementById('crear-proyecto-form');
+    form.onsubmit = function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value;
+
+      fetch('/api/proyectos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nombre: nombre, porcentaje_avance: 0 })
+      })
+      .then(response => {
+        if (response.ok) {
+          modal.style.display = 'none'; // Cerrar el modal de creación de proyecto
+          showSuccessModal(); // Mostrar el modal de éxito
+        }
+      })
+      .catch(err => {
+        console.error('Error al crear el proyecto:', err);
+      });
+    };
+
+    // Mostrar el modal de éxito
+    function showSuccessModal() {
+      const successModal = document.getElementById('successModal');
+      successModal.style.display = 'block';
+    }
+
+    // Cerrar el modal de éxito y redirigir a la página de proyectos
+    const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
+    closeSuccessModalBtn.onclick = function() {
+      const successModal = document.getElementById('successModal');
+      successModal.style.display = 'none';
+      window.location.href = '/proyectos';
+    }
+  </script>
+</body>
+</html>
