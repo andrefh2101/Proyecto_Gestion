@@ -16,6 +16,7 @@ const AreaConocimiento = {
       });
     });
   },
+  
 
   // Obtener los tipo_id que ya están asignados al proyecto
   getTipoIdsByProjectId: (proyecto_id) => {

@@ -9,6 +9,8 @@ const areaConocimientoController = require('./controllers/areaConocimientoContro
 const subcategoriaController = require('./controllers/subcategoriaController');
 const subcategoriaRoutes = require("./routes/subcategoriaRoutes");
 const router = express.Router();
+const evaluacionRoutes = require("./routes/evaluacionRoutes");
+const itemsRoutes = require("./routes/itemsRoutes");
 
 const app = express();
 const port = 3000;
@@ -29,6 +31,8 @@ app.use(bodyParser.json()); // Agregar para aceptar solicitudes con JSON
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use("/api/subcategorias", subcategoriaRoutes);
+app.use("/items", itemsRoutes);
+app.use("/items", require("./routes/itemsRoutes"));
 
 
 // Archivos estáticos (CSS, imágenes, etc.)
@@ -87,7 +91,7 @@ app.post('/crear-proyecto', projectController.createProject, (req, res) => {
   // Redirigir al usuario a la página de proyectos después de la creación
   res.redirect('/proyectos');
 });
-
+app.use("/api/evaluaciones", evaluacionRoutes);
 // Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

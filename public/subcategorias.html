@@ -8,35 +8,173 @@
   <link rel="stylesheet" href="/style.css">
 
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+    }
+
+    /* GRID DE SUBCATEGORÍAS */
+    #sub-lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
     .sub-card {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      width: 200px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: 0.2s ease-in-out;
     }
 
+    .sub-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+
+    .sub-link {
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #1e40af;
+    }
+
+    .sub-link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-delete {
+      background: #e11d48;
+      color: white;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-delete:hover {
+      background: #be123c;
+    }
+
+    /* BOTÓN PRINCIPAL */
+    #crearSubBtn {
+      display: block;
+      margin: 20px auto;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+
+    #crearSubBtn:hover {
+      background: #1d4ed8;
+    }
+
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
-      z-index: 2;
+      z-index: 999;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,.4);
+      background: rgba(0,0,0,.45);
+      animation: fadeIn .3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .modal-content {
       background: #fff;
-      width: 300px;
-      padding: 20px;
-      margin: 15% auto;
-      border-radius: 10px;
+      width: 350px;
+      padding: 25px;
+      margin: 10% auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      animation: slideDown .3s;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      margin-bottom: 15px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background: #059669;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button[type="submit"]:hover {
+      background: #047857;
+    }
+
+    #closeSubModal {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: #6b7280;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+
+    #closeSubModal:hover {
+      background: #4b5563;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: #1e3a8a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -85,17 +223,22 @@
       }
 
       subcategorias.forEach(sub => {
-        const div = document.createElement("div");
-        div.classList.add("sub-card");
+  const div = document.createElement("div");
+  div.classList.add("sub-card");
 
-        div.innerHTML = `
-  <a href="detalle.html?id=${sub.id}" class="sub-link">${sub.nombre}</a>
-  <button class="btn-delete" data-id="${sub.id}">Eliminar</button>
-`;
+  div.innerHTML = `
+    <a href="detalle.html?id=${sub.nombre_subcategoria_id}" class="sub-link">${sub.nombre}</a>
 
+    <button 
+      class="btn-delete" 
+      data-id="${sub.subcategoria_id}">
+      Eliminar
+    </button>
+  `;
 
-        lista.appendChild(div);
-      });
+  lista.appendChild(div);
+});
+
     }
 
     cargarSubcategorias();
@@ -117,11 +260,9 @@
 
     cargarSubcategoriasDisponibles();
 
-
     const modal = document.getElementById("subModal");
     document.getElementById("crearSubBtn").onclick = () => modal.style.display = "block";
     document.getElementById("closeSubModal").onclick = () => modal.style.display = "none";
-
 
     document.getElementById("form-sub").onsubmit = async function(e) {
       e.preventDefault();

@@ -63,3 +63,49 @@ li {
   background: #c81724;
 }
 
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+h1, h2 {
+  color: #003366;
+}
+
+/* Tabla estilo Excel */
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.excel-table th {
+  background-color: #d9e1f2;
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.excel-table td {
+  border: 1px solid #000;
+  padding: 6px;
+  background-color: #fff;
+}
+
+/* Filas tipo Excel alternadas */
+.excel-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Hover */
+.excel-table tbody tr:hover {
+  background-color: #e6f2ff;
+}
+
+/* Enlace regresar */
+a {
+  font-size: 16px;
+  color: #0047b3;
+}
