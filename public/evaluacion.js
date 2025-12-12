@@ -159,10 +159,18 @@ async function guardarArchivo(e) {
 
     const formData = new FormData();
     formData.append("archivo", file);
+
+    // IDs
     formData.append("proyecto_id", proyecto_id);
     formData.append("subcategoria_id", subcategoria_id);
     formData.append("item_id", tr.dataset.id);
     formData.append("tipo", tr.dataset.tipo);
+
+    // Campos adicionales de la fila
+    formData.append("cumplio", tr.querySelector('[data-field="cumplio"]').value || null);
+    formData.append("descripcion", tr.querySelector('[data-field="descripcion"]').value || null);
+    formData.append("observaciones", tr.querySelector('[data-field="observaciones"]').value || null);
+    formData.append("fecha_cumplimiento", tr.querySelector('[data-field="fecha_cumplimiento"]').value || null);
 
     try {
         const res = await fetch("/api/evaluaciones/upload", {
@@ -175,14 +183,15 @@ async function guardarArchivo(e) {
         if (data.evidencia_path) {
             tr.querySelector("td:last-child").innerHTML +=
                 `<a href="${data.evidencia_path}" target="_blank" style="display:block;color:green;">Ver evidencia</a>`;
-
-            // Guardar automáticamente los demás campos de la fila
-            await guardarFila({ target: tr.querySelector('[data-field="cumplio"]') });
         }
+
+        console.log("Guardado completo:", data);
+
     } catch (error) {
         console.error("Error subiendo archivo:", error);
     }
 }
+
 
 
 

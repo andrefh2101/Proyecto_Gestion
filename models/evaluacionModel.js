@@ -75,22 +75,45 @@ const Evaluacion = {
     },
 
     // 📂 Guardar SOLO archivo de evidencia (ON DUPLICATE KEY UPDATE)
-    async saveFile({ proyecto_id, subcategoria_id, item_id, tipo, evidencia_path }) {
-        const query = `
-            INSERT INTO evaluaciones 
-            (proyecto_id, subcategoria_id, item_id, tipo, evidencia_path)
-            VALUES (?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE evidencia_path = VALUES(evidencia_path)
-        `;
+   async saveFile({ 
+    proyecto_id, 
+    subcategoria_id, 
+    item_id, 
+    tipo, 
+    evidencia_path,
+    cumplio,
+    descripcion,
+    observaciones,
+    fecha_cumplimiento
+}) {
 
-        await db.query(query, [
-            proyecto_id,
-            subcategoria_id,
-            item_id,
-            tipo,
-            evidencia_path
-        ]);
-    },
+    const query = `
+        INSERT INTO evaluaciones 
+        (proyecto_id, subcategoria_id, item_id, tipo, evidencia_path, cumplio, descripcion, observaciones, fecha_cumplimiento)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+            evidencia_path = VALUES(evidencia_path),
+            cumplio = VALUES(cumplio),
+            descripcion = VALUES(descripcion),
+            observaciones = VALUES(observaciones),
+            fecha_cumplimiento = VALUES(fecha_cumplimiento)
+    `;
+
+    await db.query(query, [
+        proyecto_id,
+        subcategoria_id,
+        item_id,
+        tipo,
+        evidencia_path,
+        cumplio,
+        descripcion,
+        observaciones,
+        fecha_cumplimiento
+    ]);
+
+    return { success: true, evidencia_path };
+}
+,
 
     // 🟦 Guardar evaluación SIN archivo (ON DUPLICATE)
     async save(data) {

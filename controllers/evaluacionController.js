@@ -65,7 +65,16 @@ exports.save = async (req, res) => {
 // =======================================================
 exports.upload = async (req, res) => {
     try {
-        const { proyecto_id, subcategoria_id, item_id, tipo } = req.body;
+        const { 
+            proyecto_id, 
+            subcategoria_id, 
+            item_id, 
+            tipo,
+            cumplio,
+            descripcion,
+            observaciones,
+            fecha_cumplimiento
+        } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ error: "No se envió archivo" });
@@ -78,7 +87,11 @@ exports.upload = async (req, res) => {
             subcategoria_id,
             item_id,
             tipo,
-            evidencia_path
+            evidencia_path,
+            cumplio,
+            descripcion,
+            observaciones,
+            fecha_cumplimiento
         });
 
         res.json({
@@ -91,3 +104,4 @@ exports.upload = async (req, res) => {
         res.status(500).json({ error: "Error al subir archivo" });
     }
 };
+
