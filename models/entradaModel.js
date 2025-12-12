@@ -1,19 +1,19 @@
+// models/entradaModel.js
 const db = require('../config/db');
 
 const Entrada = {
-  getBySubcategoriaId: (subcategoria_id) => {
-    return new Promise((resolve, reject) => {
-      const query = `
-        SELECT *
-        FROM entradas
-        WHERE subcategoria_id = ?
-      `;
-      db.query(query, [subcategoria_id], (err, results) => {
-        if (err) reject(err);
-        resolve(results);
-      });
-    });
+
+  async getBySubcategoriaId(subcategoria_id) {
+    const query = `
+      SELECT *
+      FROM entradas
+      WHERE subcategoria_id = ?
+    `;
+
+    const results = await db.query(query, [subcategoria_id]);
+    return results;
   }
+
 };
 
 module.exports = Entrada;

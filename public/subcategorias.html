@@ -21,7 +21,7 @@
       color: #1e3a8a;
     }
 
-    /* GRID DE SUBCATEGORÍAS */
+    /* GRID */
     #sub-lista {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -37,7 +37,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: 0.2s ease-in-out;
+      transition: 0.2s;
     }
 
     .sub-card:hover {
@@ -63,14 +63,8 @@
       padding: 7px 12px;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    .btn-delete:hover {
-      background: #be123c;
-    }
-
-    /* BOTÓN PRINCIPAL */
     #crearSubBtn {
       display: block;
       margin: 20px auto;
@@ -81,11 +75,6 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
-      transition: background 0.2s;
-    }
-
-    #crearSubBtn:hover {
-      background: #1d4ed8;
     }
 
     /* MODAL */
@@ -98,12 +87,6 @@
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,.45);
-      animation: fadeIn .3s;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .modal-content {
@@ -113,18 +96,6 @@
       margin: 10% auto;
       border-radius: 12px;
       box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      animation: slideDown .3s;
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-40px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 6px;
     }
 
     select {
@@ -143,11 +114,6 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 15px;
-    }
-
-    button[type="submit"]:hover {
-      background: #047857;
     }
 
     #closeSubModal {
@@ -160,22 +126,6 @@
       border-radius: 6px;
     }
 
-    #closeSubModal:hover {
-      background: #4b5563;
-    }
-
-    a {
-      display: block;
-      text-align: center;
-      margin-top: 25px;
-      color: #1e3a8a;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
@@ -207,9 +157,13 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const areaId = urlParams.get("area");
+    const proyectoId = urlParams.get("proyecto");
 
     document.getElementById("areaID").value = areaId;
 
+    /* ==============================
+       CARGAR SUBCATEGORÍAS EXISTENTES
+    =============================== */
     async function cargarSubcategorias() {
       const resp = await fetch(`/api/areas/${areaId}/subcategorias`);
       const lista = document.getElementById("sub-lista");
@@ -223,26 +177,26 @@
       }
 
       subcategorias.forEach(sub => {
-  const div = document.createElement("div");
-  div.classList.add("sub-card");
+        const div = document.createElement("div");
+        div.classList.add("sub-card");
 
-  div.innerHTML = `
-    <a href="detalle.html?id=${sub.nombre_subcategoria_id}" class="sub-link">${sub.nombre}</a>
+        div.innerHTML = `
+          <a href="detalle.html?subcategoria=${sub.subcategoria_id}&area=${areaId}&proyecto=${proyectoId}" 
+             class="sub-link">${sub.nombre}</a>
 
-    <button 
-      class="btn-delete" 
-      data-id="${sub.subcategoria_id}">
-      Eliminar
-    </button>
-  `;
+          <button class="btn-delete" data-id="${sub.subcategoria_id}">
+            Eliminar
+          </button>
+        `;
 
-  lista.appendChild(div);
-});
-
+        lista.appendChild(div);
+      });
     }
 
-    cargarSubcategorias();
 
+    /* ==============================
+       CARGAR SUBCATEGORÍAS DISPONIBLES
+    =============================== */
     async function cargarSubcategoriasDisponibles() {
       const resp = await fetch(`/api/areas/${areaId}/subcategorias-disponibles`);
       const opciones = await resp.json();
@@ -258,45 +212,57 @@
       });
     }
 
+    cargarSubcategorias();
     cargarSubcategoriasDisponibles();
 
+
+    /* ==============================
+       MODAL
+    =============================== */
     const modal = document.getElementById("subModal");
+
     document.getElementById("crearSubBtn").onclick = () => modal.style.display = "block";
     document.getElementById("closeSubModal").onclick = () => modal.style.display = "none";
 
+
+    /* ==============================
+       CREAR SUBCATEGORÍA
+    =============================== */
     document.getElementById("form-sub").onsubmit = async function(e) {
       e.preventDefault();
 
-      const nombre_subcategoria_id = document.getElementById("subSelect").value;
+      const subcategoria_id = document.getElementById("subSelect").value;
 
       const resp = await fetch('/api/subcategorias', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nombre_subcategoria_id,
+          subcategoria_id,
           area_conocimiento_id: areaId
         })
       });
 
       if (resp.ok) {
         modal.style.display = "none";
-        await cargarSubcategorias();
-        await cargarSubcategoriasDisponibles();
+        cargarSubcategorias();
+        cargarSubcategoriasDisponibles();
       } else {
         const err = await resp.json();
         alert(err.message);
       }
     };
 
+
+    /* ==============================
+       ELIMINAR SUBCATEGORÍA
+    =============================== */
     document.addEventListener("click", async function(e) {
       if (!e.target.classList.contains("btn-delete")) return;
 
       const id = e.target.getAttribute("data-id");
 
       if (confirm("¿Seguro que deseas eliminar esta subcategoría?")) {
-        const resp = await fetch(`/api/subcategorias/${id}`, {
-          method: 'DELETE'
-        });
+        const resp = await fetch(`/api/subcategorias/${id}`, { method: 'DELETE' });
 
         if (resp.ok) {
           cargarSubcategorias();
@@ -309,7 +275,7 @@
     });
   </script>
 
-  <a href="/areas.html?proyecto=1">Volver a Áreas</a>
+  <a href="/areas.html?proyecto=${proyectoId}">Volver a Áreas</a>
 
 </body>
 </html>

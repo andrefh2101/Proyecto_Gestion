@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Matriz de Evaluación</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 25px;
+            background: #f7f9fb;
+        }
+        h2 { color: #1e3a8a; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #e5e7eb;
+            padding: 10px;
+        }
+        td {
+            border-bottom: 1px solid #ddd;
+            padding: 8px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 6px;
+        }
+        textarea {
+            resize: vertical;
+            height: 60px;
+        }
+        .ok { background: #e0ffe0; }
+    </style>
+</head>
+<body>
+
+<h2>Matriz de Evaluación</h2>
+
+<div id="contenedorTablas"></div>
+
+<!-- Botón opcional -->
+<button onclick="guardarTodo()">💾 Guardar Todo</button>
+
+<script src="evaluacion.js"></script>
+
+</body>
+</html>

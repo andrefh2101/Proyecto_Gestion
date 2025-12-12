@@ -1,91 +1,93 @@
+
 // controllers/evaluacionController.js
-const multer = require("multer");
+const evaluacionModel = require("../models/evaluacionModel");
+const itemsModel = require("../models/itemsModel");
 const path = require("path");
-const Evaluacion = require("../models/evaluacionModel");
+const fs = require("fs");
 
-// -------------------------------------------
-// CONFIGURACIÓN MULTER PARA ARCHIVOS
-// -------------------------------------------
-const storage = multer.diskStorage({
-  destination: "public/evidencias",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
-  }
-});
+// =======================================================
+// 1) OBTENER MATRIZ COMPLETA
+// =======================================================
+exports.getBySubcategoria = async (req, res) => {
+    try {
+        const { proyecto_id, subcategoria_id } = req.params;
 
-const upload = multer({ storage });
+        // Items (entradas, herramientas, salidas)
+        const items = await itemsModel.getBySubcategoria(subcategoria_id);
 
-// Exportamos multer para usarlo en la ruta
-exports.upload = upload;
+        // Evaluaciones previas
+        const evaluaciones = await evaluacionModel.getBySubcategoria(
+            proyecto_id,
+            subcategoria_id
+        );
 
-// -------------------------------------------
-// LISTAR EVALUACIONES DE UNA SUBCATEGORIA
-// -------------------------------------------
-exports.getEvaluacionesBySubcategoria = async (req, res) => {
-  try {
-    const subcategoria_id = req.params.id;
-    const proyecto_id = req.query.proyecto;
+        // Mapeo clave item_id_tipo
+        const evaluacionesMap = {};
+        evaluaciones.forEach(ev => {
+            const key = `${ev.item_id}_${ev.tipo}`;
+            evaluacionesMap[key] = ev;
+        });
 
-    const datos = await Evaluacion.getBySubcategoria(proyecto_id, subcategoria_id);
-    res.json(datos);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json(err);
-  }
-};
+        res.json({ items, evaluaciones: evaluacionesMap });
 
-// -------------------------------------------
-// GUARDAR TODAS LAS EVALUACIONES DEL FORM
-// -------------------------------------------
-exports.guardarEvaluaciones = async (req, res) => {
-  const proyectoId = req.body.proyecto_id;
-  const subcategoriaId = req.body.subcategoria_id;
-
-  try {
-    const files = req.files || [];
-
-    for (let key in req.body) {
-
-      if (!key.startsWith("cumplio_")) continue;
-
-      const [, tipo, itemId] = key.split("_");
-
-      const cumplio = req.body[key] || "NO";
-      const descripcion = req.body[`descripcion_${tipo}_${itemId}`] || null;
-      const observaciones = req.body[`observaciones_${tipo}_${itemId}`] || null;
-
-      // Buscar archivo correspondiente
-      const fileObj = files.find(f => f.fieldname === `evidencia_${tipo}_${itemId}`);
-      const evidencia_path = fileObj ? `/evidencias/${fileObj.filename}` : null;
-
-      await Evaluacion.insert({
-        proyecto_id: proyectoId,
-        subcategoria_item_id: itemId,
-        tipo,
-        cumplio,
-        descripcion,
-        observaciones,
-        evidencia_path
-      });
+    } catch (error) {
+        console.error("Error en getBySubcategoria:", error);
+        res.status(500).json({ error: "Error al obtener datos" });
     }
-
-    res.json({ ok: true, message: "Evaluaciones guardadas correctamente" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err });
-  }
 };
 
-// -------------------------------------------
-// LISTAR EVALUACIONES POR PROYECTO
-// -------------------------------------------
-exports.listarEvaluaciones = async (req, res) => {
-  try {
-    const { proyectoId, subcategoriaId } = req.params;
-    const datos = await Evaluacion.listar(proyectoId, subcategoriaId);
-    res.json(datos);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+
+
+// =======================================================
+// 2) GUARDAR O ACTUALIZAR EVALUACIÓN (sin archivos)
+// =======================================================
+exports.save = async (req, res) => {
+    try {
+        const data = req.body;
+
+        if (!data.proyecto_id || !data.subcategoria_id || !data.item_id || !data.tipo) {
+            return res.status(400).json({ error: "Faltan datos obligatorios" });
+        }
+
+        const result = await evaluacionModel.saveOrUpdate(data);
+        res.json({ message: "Guardado correctamente", result });
+
+    } catch (error) {
+        console.error("Error en save:", error);
+        res.status(500).json({ error: "Error al guardar" });
+    }
+};
+
+
+
+// =======================================================
+// 3) UPLOAD DE ARCHIVO DE EVIDENCIA
+// =======================================================
+exports.upload = async (req, res) => {
+    try {
+        const { proyecto_id, subcategoria_id, item_id, tipo } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ error: "No se envió archivo" });
+        }
+
+        const evidencia_path = `/uploads/evaluaciones/${req.file.filename}`;
+
+        await evaluacionModel.saveFile({
+            proyecto_id,
+            subcategoria_id,
+            item_id,
+            tipo,
+            evidencia_path
+        });
+
+        res.json({
+            message: "Archivo subido",
+            evidencia_path
+        });
+
+    } catch (error) {
+        console.error("Error en upload:", error);
+        res.status(500).json({ error: "Error al subir archivo" });
+    }
 };

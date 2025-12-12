@@ -1,27 +1,35 @@
 // models/projectModel.js
 const db = require('../config/db');
 
-
 const Project = {
-  create: (name, percentage) => {
-  return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO proyectos (nombre, porcentaje_avance) VALUES (?, ?)';
-    db.query(query, [name, percentage], (err, result) => {
-      if (err) reject(err);
-      resolve(result.insertId); // ← SE RETORNA EL ID DEL PROYECTO
-    });
-  });
-},
 
-  getAll: () => {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM proyectos';
-      db.query(query, (err, results) => {
-        if (err) reject(err);
-        resolve(results);
-      });
-    });
+  // Crear proyecto
+  create: async (name, percentage) => {
+    try {
+      const sql = `
+        INSERT INTO proyectos (nombre, porcentaje_avance)
+        VALUES (?, ?)
+      `;
+      
+      const [result] = await db.query(sql, [name, percentage]);
+
+      return result.insertId; // devuelve el ID creado
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  // Obtener todos los proyectos
+  getAll: async () => {
+    try {
+      const sql = `SELECT * FROM proyectos`;
+      const [rows] = await db.query(sql);
+      return rows;
+    } catch (err) {
+      throw err;
+    }
   }
+
 };
 
 module.exports = Project;

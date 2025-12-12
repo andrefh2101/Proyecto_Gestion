@@ -1,19 +1,24 @@
+// models/herramientaModel.js
 const db = require('../config/db');
 
 const Herramienta = {
-  getBySubcategoriaId: (subcategoria_id) => {
-    return new Promise((resolve, reject) => {
-      const query = `
-        SELECT *
-        FROM herramientas
-        WHERE subcategoria_id = ?
-      `;
-      db.query(query, [subcategoria_id], (err, results) => {
-        if (err) reject(err);
-        resolve(results);
-      });
-    });
+
+  // Obtener herramientas por subcategoría
+  async getBySubcategoriaId(subcategoria_id) {
+    const query = `
+      SELECT *
+      FROM herramientas
+      WHERE subcategoria_id = ?
+    `;
+    
+    try {
+      const [results] = await db.query(query, [subcategoria_id]);
+      return results;
+    } catch (err) {
+      throw err; // Re-lanzamos el error
+    }
   }
+
 };
 
 module.exports = Herramienta;

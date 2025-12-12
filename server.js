@@ -31,9 +31,10 @@ app.use(bodyParser.json()); // Agregar para aceptar solicitudes con JSON
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use("/api/subcategorias", subcategoriaRoutes);
-app.use("/items", itemsRoutes);
 app.use("/items", require("./routes/itemsRoutes"));
-
+app.use(express.static("public"));
+app.use("/api/evaluaciones", evaluacionRoutes);
+app.use("/uploads/evidencias", express.static("uploads/evidencias"));
 
 // Archivos estáticos (CSS, imágenes, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -66,8 +67,6 @@ app.get('/api/proyectos/:proyectoId/areas-disponibles', areaConocimientoControll
 app.get('/api/areas/:areaId/subcategorias-disponibles', subcategoriaController.getSubcategoriasDisponibles);
 app.delete('/api/subcategorias/:id', subcategoriaController.deleteSubcategoria);
 
-
-app.use(express.static("public"));
 router.get("/:id", subcategoriaController.getSubcategoriaById);
 router.get("/:id/entradas", subcategoriaController.getEntradasBySubcategoria);
 router.get("/:id/herramientas", subcategoriaController.getHerramientasBySubcategoria);
@@ -91,7 +90,6 @@ app.post('/crear-proyecto', projectController.createProject, (req, res) => {
   // Redirigir al usuario a la página de proyectos después de la creación
   res.redirect('/proyectos');
 });
-app.use("/api/evaluaciones", evaluacionRoutes);
 // Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
