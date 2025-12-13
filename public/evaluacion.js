@@ -2,32 +2,45 @@
 // CAPTURA DE PARÁMETROS
 // ==============================
 const params = new URLSearchParams(window.location.search);
-const proyecto_id = params.get("proyecto");
-const subcategoria_id = params.get("subcategoria");
+const proyecto_id = Number(params.get("proyecto"));
+const subcategoria_id = Number(params.get("subcategoria"));
+
+const archivosPendientes = {};
 
 if (!proyecto_id || !subcategoria_id) {
-    alert("Faltan parámetros en la URL");
+    alert("❌ Faltan parámetros en la URL");
+    throw new Error("Parámetros incompletos");
 }
 
 const API = `/api/evaluaciones/${proyecto_id}/${subcategoria_id}`;
-
-// Guardará todas las evaluaciones para acceso global
 let evaluacionesMap = {};
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("🟢 DOM cargado");
     cargarDatos();
+
+    // 🔥 BOTÓN GUARDAR (CRÍTICO)
+    const btnGuardar = document.getElementById("btnGuardar");
+    if (btnGuardar) {
+        btnGuardar.addEventListener("click", guardarTodo);
+        console.log("🟢 Botón Guardar conectado");
+    } else {
+        console.error("❌ NO existe el botón btnGuardar");
+    }
 });
 
 // ==============================
 // CARGAR MATRIZ
 // ==============================
 async function cargarDatos() {
+    console.log("📥 Cargando datos...");
+
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("DATA RECIBIDA:", data);
+    console.log("📦 DATA RECIBIDA:", data);
 
-    evaluacionesMap = data.evaluaciones;
+    evaluacionesMap = data.evaluaciones || {};
 
     const entradas = data.items.filter(i => i.tipo === "entrada");
     const herramientas = data.items.filter(i => i.tipo === "herramienta");
@@ -38,17 +51,15 @@ async function cargarDatos() {
     generarTabla("Salidas", salidas, "salida");
 }
 
-
-
 // ==============================
 // GENERAR TABLA
 // ==============================
 function generarTabla(titulo, lista, tipo) {
-    if (!lista || lista.length === 0) return;
+    if (!lista.length) return;
 
     let html = `
         <h3>${titulo}</h3>
-        <table>
+        <table border="1">
             <tr>
                 <th>Ítem</th>
                 <th>Cumplió</th>
@@ -60,8 +71,7 @@ function generarTabla(titulo, lista, tipo) {
     `;
 
     lista.forEach(item => {
-        const key = `${item.id}_${item.tipo || tipo}`;
-
+        const key = `${item.id}_${tipo}`;
         const ev = evaluacionesMap[key] || {};
 
         html += `
@@ -69,156 +79,98 @@ function generarTabla(titulo, lista, tipo) {
                 <td>${item.nombre}</td>
 
                 <td>
-                    <select class="input-auto" data-field="cumplio">
+                    <select data-field="cumplio">
                         <option value="">--</option>
                         <option value="1" ${ev.cumplio == 1 ? "selected" : ""}>Sí</option>
                         <option value="0" ${ev.cumplio == 0 ? "selected" : ""}>No</option>
                     </select>
                 </td>
 
-                <td>
-                    <textarea class="input-auto" data-field="descripcion">${ev.descripcion || ""}</textarea>
-                </td>
+                <td><textarea data-field="descripcion">${ev.descripcion || ""}</textarea></td>
+                <td><textarea data-field="observaciones">${ev.observaciones || ""}</textarea></td>
 
                 <td>
-                    <textarea class="input-auto" data-field="observaciones">${ev.observaciones || ""}</textarea>
-                </td>
-
-                <td>
-                    <input 
-                        type="date" 
-                        class="input-auto" 
-                        data-field="fecha_cumplimiento"
+                    <input type="date" data-field="fecha_cumplimiento"
                         value="${ev.fecha_cumplimiento || ""}">
                 </td>
 
                 <td>
-                    <input 
-                        type="file" 
-                        class="input-file" 
-                        accept=".pdf,.png,.jpg,.jpeg">
-
-                    ${
-                        ev.evidencia_path
-                        ? `<a href="${ev.evidencia_path}" target="_blank" style="display:block;color:green;">Ver evidencia</a>`
-                        : ""
-                    }
+                    <input type="file" class="input-file" accept=".pdf,.png,.jpg,.jpeg">
+                    ${ev.evidencia_path ? `<br><a href="${ev.evidencia_path}" target="_blank">Ver evidencia</a>` : ""}
                 </td>
             </tr>
         `;
     });
 
-    html += `</table>`;
+    html += "</table>";
     document.getElementById("contenedorTablas").innerHTML += html;
 
-    document.querySelectorAll(".input-auto").forEach(el => {
-        el.addEventListener("change", guardarFila);
-    });
-
-    document.querySelectorAll(".input-file").forEach(el => {
-        el.addEventListener("change", guardarArchivo);
-    });
-}
-
-
-
-// ==============================
-// GUARDAR INFORMACIÓN (TEXTOS)
-// ==============================
-async function guardarFila(e) {
-    const tr = e.target.closest("tr");
-
-    const data = {
-        proyecto_id,
-        subcategoria_id,
-        item_id: tr.dataset.id,
-        tipo: tr.dataset.tipo,
-        cumplio: tr.querySelector('[data-field="cumplio"]').value,
-        descripcion: tr.querySelector('[data-field="descripcion"]').value,
-        observaciones: tr.querySelector('[data-field="observaciones"]').value,
-        fecha_cumplimiento: tr.querySelector('[data-field="fecha_cumplimiento"]').value
-    };
-
-    await fetch("/api/evaluaciones/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
-}
-
-
-
-// ==============================
-// GUARDAR ARCHIVO (UPLOAD)
-// ==============================
-async function guardarArchivo(e) {
-    const tr = e.target.closest("tr");
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("archivo", file);
-
-    // IDs
-    formData.append("proyecto_id", proyecto_id);
-    formData.append("subcategoria_id", subcategoria_id);
-    formData.append("item_id", tr.dataset.id);
-    formData.append("tipo", tr.dataset.tipo);
-
-    // Campos adicionales de la fila
-    formData.append("cumplio", tr.querySelector('[data-field="cumplio"]').value || null);
-    formData.append("descripcion", tr.querySelector('[data-field="descripcion"]').value || null);
-    formData.append("observaciones", tr.querySelector('[data-field="observaciones"]').value || null);
-    formData.append("fecha_cumplimiento", tr.querySelector('[data-field="fecha_cumplimiento"]').value || null);
-
-    try {
-        const res = await fetch("/api/evaluaciones/upload", {
-            method: "POST",
-            body: formData
+    document.querySelectorAll(".input-file").forEach(input => {
+        input.addEventListener("change", e => {
+            const tr = e.target.closest("tr");
+            const key = `${tr.dataset.id}_${tr.dataset.tipo}`;
+            archivosPendientes[key] = e.target.files[0];
+            console.log("📎 Archivo seleccionado:", key);
         });
-
-        const data = await res.json();
-
-        if (data.evidencia_path) {
-            tr.querySelector("td:last-child").innerHTML +=
-                `<a href="${data.evidencia_path}" target="_blank" style="display:block;color:green;">Ver evidencia</a>`;
-        }
-
-        console.log("Guardado completo:", data);
-
-    } catch (error) {
-        console.error("Error subiendo archivo:", error);
-    }
+    });
 }
 
-
-
-
 // ==============================
-// GUARDAR TODO (OPCIONAL)
+// GUARDAR TODO (DEBUG TOTAL)
 // ==============================
 async function guardarTodo() {
-    const rows = document.querySelectorAll("tr[data-id]");
+    console.log("🔥 guardarTodo() EJECUTADO");
 
-    for (const tr of rows) {
+    const filas = document.querySelectorAll("tr[data-id]");
+    console.log("📄 Filas detectadas:", filas.length);
+
+    for (const tr of filas) {
+        const cumplioValue = tr.querySelector('[data-field="cumplio"]').value;
+
+        if (cumplioValue === "") continue;
+
         const data = {
             proyecto_id,
             subcategoria_id,
-            item_id: tr.dataset.id,
+            item_id: Number(tr.dataset.id),
             tipo: tr.dataset.tipo,
-            cumplio: tr.querySelector('[data-field="cumplio"]').value,
-            descripcion: tr.querySelector('[data-field="descripcion"]').value,
-            observaciones: tr.querySelector('[data-field="observaciones"]').value,
-            fecha_cumplimiento: tr.querySelector('[data-field="fecha_cumplimiento"]').value
+            cumplio: Number(cumplioValue),
+            descripcion: tr.querySelector('[data-field="descripcion"]').value || null,
+            observaciones: tr.querySelector('[data-field="observaciones"]').value || null,
+            fecha_cumplimiento:
+                tr.querySelector('[data-field="fecha_cumplimiento"]').value || null
         };
 
-        await fetch("/api/evaluaciones/save", {
+        console.log("➡️ Enviando TEXTO:", data);
+
+        // 🔹 TEXTO
+        const res = await fetch("/api/evaluaciones/save", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
+
+        console.log("⬅️ Respuesta save:", res.status);
+
+        // 🔹 ARCHIVO
+        const key = `${data.item_id}_${data.tipo}`;
+        const archivo = archivosPendientes[key];
+
+        if (archivo) {
+            console.log("⬆️ Subiendo archivo:", key);
+
+            const formData = new FormData();
+            formData.append("archivo", archivo);
+            Object.entries(data).forEach(([k, v]) => v !== null && formData.append(k, v));
+
+            const resFile = await fetch("/api/evaluaciones/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            console.log("⬅️ Respuesta upload:", resFile.status);
+        }
     }
 
-    alert("Guardado correctamente");
+    alert("✅ Evaluaciones guardadas correctamente");
 }

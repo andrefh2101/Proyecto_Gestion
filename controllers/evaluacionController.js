@@ -105,3 +105,21 @@ exports.upload = async (req, res) => {
     }
 };
 
+exports.save = async (req, res) => {
+    try {
+        console.log("📥 BODY RECIBIDO:", req.body);
+
+        const data = req.body;
+
+        if (!data.proyecto_id || !data.subcategoria_id || !data.item_id || !data.tipo) {
+            return res.status(400).json({ error: "Faltan datos obligatorios" });
+        }
+
+        const result = await evaluacionModel.saveOrUpdate(data);
+        res.json({ message: "Guardado correctamente", result });
+
+    } catch (error) {
+        console.error("❌ Error en save:", error);
+        res.status(500).json({ error: "Error al guardar" });
+    }
+};
