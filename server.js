@@ -11,6 +11,7 @@ const subcategoriaRoutes = require("./routes/subcategoriaRoutes");
 const router = express.Router();
 const evaluacionRoutes = require("./routes/evaluacionRoutes");
 const itemsRoutes = require("./routes/itemsRoutes");
+const areasRoutes = require("./routes/areasRoutes");
 
 const app = express();
 const port = 3000;
@@ -35,6 +36,7 @@ app.use("/items", require("./routes/itemsRoutes"));
 app.use(express.static("public"));
 app.use("/api/evaluaciones", evaluacionRoutes);
 app.use("/uploads/evidencias", express.static("uploads/evidencias"));
+app.use("/api/areas", areasRoutes);
 
 // Archivos estáticos (CSS, imágenes, etc.)
 app.use(express.static(path.join(__dirname, 'public')));

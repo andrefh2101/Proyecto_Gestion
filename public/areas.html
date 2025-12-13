@@ -182,7 +182,9 @@
         div.classList.add("area-card");
 
         div.innerHTML = `<h4>${area.nombre}</h4>`;
-        div.onclick = () => window.location.href = `/subcategorias.html?area=${area.id}`;
+        div.onclick = () => 
+  window.location.href = `/subcategorias.html?area=${area.id}&proyecto=${proyectoId}`;
+
 
         lista.appendChild(div);
       });

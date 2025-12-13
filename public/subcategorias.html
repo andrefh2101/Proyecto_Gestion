@@ -165,52 +165,56 @@
        CARGAR SUBCATEGORÍAS EXISTENTES
     =============================== */
     async function cargarSubcategorias() {
-      const resp = await fetch(`/api/areas/${areaId}/subcategorias`);
-      const lista = document.getElementById("sub-lista");
-      const subcategorias = await resp.json();
+  const resp = await fetch(`/api/subcategorias/${areaId}/subcategorias`);
+  const lista = document.getElementById("sub-lista");
+  const subcategorias = await resp.json();
 
-      lista.innerHTML = "";
+  lista.innerHTML = "";
 
-      if (subcategorias.length === 0) {
-        lista.innerHTML = "<p>No hay subcategorías registradas.</p>";
-        return;
-      }
+  if (!subcategorias || subcategorias.length === 0) {
+    lista.innerHTML = "<p>No hay subcategorías registradas.</p>";
+    return;
+  }
 
-      subcategorias.forEach(sub => {
-        const div = document.createElement("div");
-        div.classList.add("sub-card");
+  subcategorias.forEach(sub => {
+    const div = document.createElement("div");
+    div.classList.add("sub-card");
 
-        div.innerHTML = `
-          <a href="detalle.html?subcategoria=${sub.subcategoria_id}&area=${areaId}&proyecto=${proyectoId}" 
-             class="sub-link">${sub.nombre}</a>
+    div.innerHTML = `
+      <a 
+        href="/evaluacion.html?proyecto=${proyectoId}&subcategoria=${sub.subcategoria_id}" 
+        class="sub-link">
+        ${sub.nombre}
+      </a>
+      <button class="btn-delete" data-id="${sub.subcategoria_id}">
+        Eliminar
+      </button>
+    `;
 
-          <button class="btn-delete" data-id="${sub.subcategoria_id}">
-            Eliminar
-          </button>
-        `;
+    lista.appendChild(div);
+  });
+}
 
-        lista.appendChild(div);
-      });
-    }
 
 
     /* ==============================
        CARGAR SUBCATEGORÍAS DISPONIBLES
     =============================== */
     async function cargarSubcategoriasDisponibles() {
-      const resp = await fetch(`/api/areas/${areaId}/subcategorias-disponibles`);
-      const opciones = await resp.json();
+  const resp = await fetch(`/api/subcategorias/${areaId}/subcategorias-disponibles`);
+  const opciones = await resp.json();
 
-      const select = document.getElementById("subSelect");
-      select.innerHTML = "";
+  const select = document.getElementById("subSelect");
+  select.innerHTML = "";
 
-      opciones.forEach(opt => {
-        const o = document.createElement("option");
-        o.value = opt.id;
-        o.textContent = opt.nombre;
-        select.appendChild(o);
-      });
-    }
+  opciones.forEach(opt => {
+    const o = document.createElement("option");
+    o.value = opt.id;
+    o.textContent = opt.nombre;
+    select.appendChild(o);
+  });
+}
+
 
     cargarSubcategorias();
     cargarSubcategoriasDisponibles();
@@ -231,15 +235,15 @@
     document.getElementById("form-sub").onsubmit = async function(e) {
       e.preventDefault();
 
-      const subcategoria_id = document.getElementById("subSelect").value;
+const nombre_subcategoria_id = document.getElementById("subSelect").value;
 
-      const resp = await fetch('/api/subcategorias', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subcategoria_id,
-          area_conocimiento_id: areaId
-        })
+const resp = await fetch('/api/subcategorias', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    nombre_subcategoria_id,
+    area_conocimiento_id: areaId
+  })
       });
 
       if (resp.ok) {

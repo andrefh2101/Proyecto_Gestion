@@ -14,52 +14,59 @@ const Subcategoria = {
 
   // Obtener subcategorías de un área
   async getByAreaId(area_conocimiento_id) {
-    const query = `
-      SELECT 
-        s.id AS subcategoria_id,
-        ns.id AS nombre_subcategoria_id,
-        ns.nombre
-      FROM subcategorias s
-      JOIN nombre_subcategorias ns ON ns.id = s.nombre_subcategoria_id
-      WHERE s.area_conocimiento_id = ?
-    `;
-    const results = await db.query(query, [area_conocimiento_id]);
-    return results;
-  },
+  const query = `
+    SELECT 
+      s.id AS subcategoria_id,
+      ns.nombre
+    FROM subcategorias s
+    JOIN nombre_subcategorias ns 
+      ON ns.id = s.nombre_subcategoria_id
+    WHERE s.area_conocimiento_id = ?
+  `;
+
+  const [rows] = await db.query(query, [area_conocimiento_id]);
+  return rows; // 🔥 SOLO LOS DATOS
+}
+,
 
   // Validar que no exista duplicado
   async existe(area_conocimiento_id, nombre_subcategoria_id) {
-    const query = `
-      SELECT id FROM subcategorias
-      WHERE area_conocimiento_id = ? AND nombre_subcategoria_id = ?
-    `;
-    const results = await db.query(query, [
-      area_conocimiento_id,
-      nombre_subcategoria_id
-    ]);
+  const query = `
+    SELECT id FROM subcategorias
+    WHERE area_conocimiento_id = ? AND nombre_subcategoria_id = ?
+  `;
 
-    return results.length > 0;
-  },
+  const [rows] = await db.query(query, [
+    area_conocimiento_id,
+    nombre_subcategoria_id
+  ]);
+
+  return rows.length > 0;
+},
 
   // Subcategorías disponibles según el tipo del área
   async getDisponibles(areaId) {
-    const query = `
-      SELECT ns.id, ns.nombre
-      FROM areas_conocimiento ac
-      JOIN nombre_subcategorias ns ON ns.tipo_id = ac.tipo_id
-      WHERE ac.id = ?
-    `;
-    return await db.query(query, [areaId]);
-  },
+  const query = `
+    SELECT ns.id, ns.nombre
+    FROM areas_conocimiento ac
+    JOIN nombre_subcategorias ns ON ns.tipo_id = ac.tipo_id
+    WHERE ac.id = ?
+  `;
+
+  const [rows] = await db.query(query, [areaId]);
+  return rows; // 🔥 SOLO filas
+}
+,
 
   // Eliminar subcategoría
   async delete(id) {
-    const query = `
-      DELETE FROM subcategorcias
-      WHERE id = ?
-    `;
-    return await db.query(query, [id]);
-  },
+  const query = `
+    DELETE FROM subcategorias
+    WHERE id = ?
+  `;
+  return await db.query(query, [id]);
+}
+,
 
   // Obtener detalle por ID
   async getById(id) {

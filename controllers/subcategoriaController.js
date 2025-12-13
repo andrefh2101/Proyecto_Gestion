@@ -16,22 +16,27 @@ const subcategoriaController = {
   },
 
   createSubcategoria: async (req, res) => {
-    try {
-      const { area_conocimiento_id, nombre_subcategoria_id } = req.body;
+  try {
+    const { area_conocimiento_id, nombre_subcategoria_id } = req.body;
 
-      const existe = await Subcategoria.existe(area_conocimiento_id, nombre_subcategoria_id);
-      if (existe) {
-        return res.status(400).send({ message: "La subcategoría ya está registrada en esta área." });
-      }
-
-      await Subcategoria.create(area_conocimiento_id, nombre_subcategoria_id);
-      res.status(201).send({ message: "Subcategoría creada correctamente" });
-
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error al crear subcategoría");
+    if (!area_conocimiento_id || !nombre_subcategoria_id) {
+      return res.status(400).json({ message: "Datos incompletos" });
     }
-  },
+
+    const existe = await Subcategoria.existe(area_conocimiento_id, nombre_subcategoria_id);
+    if (existe) {
+      return res.status(400).json({ message: "La subcategoría ya está registrada en esta área." });
+    }
+
+    await Subcategoria.create(area_conocimiento_id, nombre_subcategoria_id);
+    res.status(201).json({ message: "Subcategoría creada correctamente" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al crear subcategoría");
+  }
+}
+,
 
   getSubcategoriasDisponibles: async (req, res) => {
     try {
