@@ -5,8 +5,6 @@ const params = new URLSearchParams(window.location.search);
 const proyecto_id = Number(params.get("proyecto"));
 const subcategoria_id = Number(params.get("subcategoria"));
 
-const archivosPendientes = {};
-
 if (!proyecto_id || !subcategoria_id) {
     alert("❌ Faltan parámetros en la URL");
     throw new Error("Parámetros incompletos");
@@ -15,40 +13,28 @@ if (!proyecto_id || !subcategoria_id) {
 const API = `/api/evaluaciones/${proyecto_id}/${subcategoria_id}`;
 let evaluacionesMap = {};
 
+// ==============================
+// DOM READY
+// ==============================
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("🟢 DOM cargado");
+    console.log("🟢 Evaluación cargada");
     cargarDatos();
-
-    // 🔥 BOTÓN GUARDAR (CRÍTICO)
-    const btnGuardar = document.getElementById("btnGuardar");
-    if (btnGuardar) {
-        btnGuardar.addEventListener("click", guardarTodo);
-        console.log("🟢 Botón Guardar conectado");
-    } else {
-        console.error("❌ NO existe el botón btnGuardar");
-    }
 });
 
 // ==============================
 // CARGAR MATRIZ
 // ==============================
 async function cargarDatos() {
-    console.log("📥 Cargando datos...");
-
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("📦 DATA RECIBIDA:", data);
+    console.log("📦 DATA:", data);
 
     evaluacionesMap = data.evaluaciones || {};
 
-    const entradas = data.items.filter(i => i.tipo === "entrada");
-    const herramientas = data.items.filter(i => i.tipo === "herramienta");
-    const salidas = data.items.filter(i => i.tipo === "salida");
-
-    generarTabla("Entradas", entradas, "entrada");
-    generarTabla("Herramientas / Técnicas", herramientas, "herramienta");
-    generarTabla("Salidas", salidas, "salida");
+    generarTabla("Entradas", data.items.filter(i => i.tipo === "entrada"), "entrada");
+    generarTabla("Herramientas / Técnicas", data.items.filter(i => i.tipo === "herramienta"), "herramienta");
+    generarTabla("Salidas", data.items.filter(i => i.tipo === "salida"), "salida");
 }
 
 // ==============================
@@ -78,20 +64,15 @@ function generarTabla(titulo, lista, tipo) {
             <tr data-id="${item.id}" data-tipo="${tipo}">
                 <td>${item.nombre}</td>
 
-                <td>
-                    <select data-field="cumplio">
-                        <option value="">--</option>
-                        <option value="1" ${ev.cumplio == 1 ? "selected" : ""}>Sí</option>
-                        <option value="0" ${ev.cumplio == 0 ? "selected" : ""}>No</option>
-                    </select>
+                <td class="cumplio-cell">
+                    ${ev.cumplio == 1 ? "✅ SÍ" : "❌ NO"}
                 </td>
 
                 <td><textarea data-field="descripcion">${ev.descripcion || ""}</textarea></td>
                 <td><textarea data-field="observaciones">${ev.observaciones || ""}</textarea></td>
 
-                <td>
-                    <input type="date" data-field="fecha_cumplimiento"
-                        value="${ev.fecha_cumplimiento || ""}">
+                <td class="fecha-cell">
+                    ${ev.fecha_cumplimiento || "Ingrese un archivo"}
                 </td>
 
                 <td>
@@ -105,72 +86,55 @@ function generarTabla(titulo, lista, tipo) {
     html += "</table>";
     document.getElementById("contenedorTablas").innerHTML += html;
 
+    // ==============================
+    // EVENTO ARCHIVO
+    // ==============================
     document.querySelectorAll(".input-file").forEach(input => {
-        input.addEventListener("change", e => {
-            const tr = e.target.closest("tr");
-            const key = `${tr.dataset.id}_${tr.dataset.tipo}`;
-            archivosPendientes[key] = e.target.files[0];
-            console.log("📎 Archivo seleccionado:", key);
-        });
+        input.addEventListener("change", e => subirArchivo(e));
     });
 }
 
 // ==============================
-// GUARDAR TODO (DEBUG TOTAL)
+// SUBIR ARCHIVO (AUTO)
 // ==============================
-async function guardarTodo() {
-    console.log("🔥 guardarTodo() EJECUTADO");
+async function subirArchivo(e) {
+    const tr = e.target.closest("tr");
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const filas = document.querySelectorAll("tr[data-id]");
-    console.log("📄 Filas detectadas:", filas.length);
+    const hoy = new Date().toISOString().split("T")[0];
 
-    for (const tr of filas) {
-        const cumplioValue = tr.querySelector('[data-field="cumplio"]').value;
+    const data = {
+        proyecto_id,
+        subcategoria_id,
+        item_id: Number(tr.dataset.id),
+        tipo: tr.dataset.tipo,
+        cumplio: 1,
+        descripcion: tr.querySelector('[data-field="descripcion"]').value || null,
+        observaciones: tr.querySelector('[data-field="observaciones"]').value || null,
+        fecha_cumplimiento: hoy
+    };
 
-        if (cumplioValue === "") continue;
+    console.log("⬆️ Subiendo evaluación:", data);
 
-        const data = {
-            proyecto_id,
-            subcategoria_id,
-            item_id: Number(tr.dataset.id),
-            tipo: tr.dataset.tipo,
-            cumplio: Number(cumplioValue),
-            descripcion: tr.querySelector('[data-field="descripcion"]').value || null,
-            observaciones: tr.querySelector('[data-field="observaciones"]').value || null,
-            fecha_cumplimiento:
-                tr.querySelector('[data-field="fecha_cumplimiento"]').value || null
-        };
+    const formData = new FormData();
+    formData.append("archivo", file);
 
-        console.log("➡️ Enviando TEXTO:", data);
+    Object.entries(data).forEach(([k, v]) => {
+        if (v !== null) formData.append(k, v);
+    });
 
-        // 🔹 TEXTO
-        const res = await fetch("/api/evaluaciones/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+    const res = await fetch("/api/evaluaciones/upload", {
+        method: "POST",
+        body: formData
+    });
 
-        console.log("⬅️ Respuesta save:", res.status);
+    const result = await res.json();
+    console.log("✅ Respuesta:", result);
 
-        // 🔹 ARCHIVO
-        const key = `${data.item_id}_${data.tipo}`;
-        const archivo = archivosPendientes[key];
+    // 🔄 Actualizar UI
+    tr.querySelector(".cumplio-cell").innerText = "✅ SÍ";
+    tr.querySelector(".fecha-cell").innerText = hoy;
 
-        if (archivo) {
-            console.log("⬆️ Subiendo archivo:", key);
-
-            const formData = new FormData();
-            formData.append("archivo", archivo);
-            Object.entries(data).forEach(([k, v]) => v !== null && formData.append(k, v));
-
-            const resFile = await fetch("/api/evaluaciones/upload", {
-                method: "POST",
-                body: formData
-            });
-
-            console.log("⬅️ Respuesta upload:", resFile.status);
-        }
-    }
-
-    alert("✅ Evaluaciones guardadas correctamente");
+    alert("✅ Evidencia guardada correctamente");
 }
