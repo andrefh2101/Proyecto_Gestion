@@ -2,9 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subcategorías</title>
-
   <link rel="stylesheet" href="/style.css">
 
   <style>
@@ -17,16 +15,14 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 20px;
       color: #1e3a8a;
     }
 
-    /* GRID */
     #sub-lista {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 15px;
-      margin-bottom: 20px;
+      margin: 20px 0;
     }
 
     .sub-card {
@@ -37,30 +33,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: 0.2s;
-    }
-
-    .sub-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
 
     .sub-link {
-      font-size: 16px;
       font-weight: bold;
-      text-decoration: none;
       color: #1e40af;
-    }
-
-    .sub-link:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
 
     .btn-delete {
       background: #e11d48;
       color: white;
       border: none;
-      padding: 7px 12px;
+      padding: 6px 10px;
       border-radius: 6px;
       cursor: pointer;
     }
@@ -68,218 +53,187 @@
     #crearSubBtn {
       display: block;
       margin: 20px auto;
+      padding: 12px 20px;
       background: #2563eb;
       color: white;
       border: none;
-      padding: 12px 20px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 16px;
     }
 
-    /* MODAL */
     .modal {
       display: none;
       position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: rgba(0,0,0,.45);
     }
 
     .modal-content {
       background: #fff;
       width: 350px;
-      padding: 25px;
       margin: 10% auto;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
     }
 
-    select {
+    select, button {
       width: 100%;
       padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #bbb;
-      margin-bottom: 15px;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      background: #059669;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    #closeSubModal {
       margin-top: 10px;
-      width: 100%;
-      padding: 10px;
-      background: #6b7280;
-      color: white;
-      border: none;
-      border-radius: 6px;
     }
 
+    .volver {
+      display: block;
+      margin-top: 30px;
+      text-align: center;
+    }
   </style>
 </head>
+
 <body>
 
-  <h1>Subcategorías</h1>
+<h1>Subcategorías</h1>
 
-  <div id="sub-lista"></div>
+<div id="sub-lista"></div>
 
-  <button id="crearSubBtn">Crear Subcategoría</button>
+<button id="crearSubBtn">Crear Subcategoría</button>
 
-  <!-- Modal -->
-  <div id="subModal" class="modal">
-    <div class="modal-content">
-      <h3>Nueva Subcategoría</h3>
+<!-- MODAL -->
+<div id="subModal" class="modal">
+  <div class="modal-content">
+    <h3>Nueva Subcategoría</h3>
 
-      <form id="form-sub">
-        <label>Subcategoría:</label>
-        <select id="subSelect" required></select>
+    <form id="form-sub">
+      <select id="subSelect" required></select>
+      <button type="submit">Crear</button>
+    </form>
 
-        <input type="hidden" id="areaID">
-
-        <button type="submit">Crear</button>
-      </form>
-
-      <button id="closeSubModal">Cerrar</button>
-    </div>
+    <button id="closeSubModal">Cerrar</button>
   </div>
+</div>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const areaId = urlParams.get("area");
-    const proyectoId = urlParams.get("proyecto");
+<a id="volverAreas" class="volver">⬅ Volver a Áreas</a>
 
-    document.getElementById("areaID").value = areaId;
+<script>
+const params = new URLSearchParams(window.location.search);
+const areaId = params.get("area");
+const proyectoId = params.get("proyecto");
 
-    /* ==============================
-       CARGAR SUBCATEGORÍAS EXISTENTES
-    =============================== */
-    async function cargarSubcategorias() {
+if (!areaId || !proyectoId) {
+  alert("Faltan parámetros en la URL");
+  location.href = "/";
+}
+
+document.getElementById("volverAreas").href =
+  `/areas.html?proyecto=${proyectoId}`;
+
+/* =============================
+   CARGAR SUBCATEGORÍAS
+============================= */
+async function cargarSubcategorias() {
   const resp = await fetch(`/api/subcategorias/${areaId}/subcategorias`);
+  const data = await resp.json();
   const lista = document.getElementById("sub-lista");
-  const subcategorias = await resp.json();
 
   lista.innerHTML = "";
 
-  if (!subcategorias || subcategorias.length === 0) {
+  if (!data.length) {
     lista.innerHTML = "<p>No hay subcategorías registradas.</p>";
     return;
   }
 
-  subcategorias.forEach(sub => {
+  data.forEach(sub => {
     const div = document.createElement("div");
-    div.classList.add("sub-card");
-
+    div.className = "sub-card";
     div.innerHTML = `
-      <a 
-        href="/evaluacion.html?proyecto=${proyectoId}&subcategoria=${sub.subcategoria_id}" 
-        class="sub-link">
+      <a class="sub-link"
+         href="/evaluacion.html?proyecto=${proyectoId}&subcategoria=${sub.subcategoria_id}">
         ${sub.nombre}
       </a>
       <button class="btn-delete" data-id="${sub.subcategoria_id}">
         Eliminar
       </button>
     `;
-
     lista.appendChild(div);
   });
 }
 
-
-
-    /* ==============================
-       CARGAR SUBCATEGORÍAS DISPONIBLES
-    =============================== */
-    async function cargarSubcategoriasDisponibles() {
+/* =============================
+   DISPONIBLES
+============================= */
+async function cargarDisponibles() {
   const resp = await fetch(`/api/subcategorias/${areaId}/subcategorias-disponibles`);
-  const opciones = await resp.json();
-
+  const data = await resp.json();
   const select = document.getElementById("subSelect");
+
   select.innerHTML = "";
 
-  opciones.forEach(opt => {
-    const o = document.createElement("option");
-    o.value = opt.id;
-    o.textContent = opt.nombre;
-    select.appendChild(o);
+  if (!data.length) {
+    select.innerHTML = `<option disabled>No hay disponibles</option>`;
+    return;
+  }
+
+  data.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.nombre;
+    select.appendChild(opt);
   });
 }
 
+cargarSubcategorias();
+cargarDisponibles();
 
-    cargarSubcategorias();
-    cargarSubcategoriasDisponibles();
+/* =============================
+   MODAL
+============================= */
+const modal = document.getElementById("subModal");
+document.getElementById("crearSubBtn").onclick = () => modal.style.display = "block";
+document.getElementById("closeSubModal").onclick = () => modal.style.display = "none";
 
+/* =============================
+   CREAR
+============================= */
+document.getElementById("form-sub").onsubmit = async e => {
+  e.preventDefault();
 
-    /* ==============================
-       MODAL
-    =============================== */
-    const modal = document.getElementById("subModal");
+  const nombre_subcategoria_id = document.getElementById("subSelect").value;
 
-    document.getElementById("crearSubBtn").onclick = () => modal.style.display = "block";
-    document.getElementById("closeSubModal").onclick = () => modal.style.display = "none";
+  const resp = await fetch("/api/subcategorias", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      area_conocimiento_id: areaId,
+      nombre_subcategoria_id
+    })
+  });
 
+  if (!resp.ok) {
+    const err = await resp.json();
+    alert(err.message);
+    return;
+  }
 
-    /* ==============================
-       CREAR SUBCATEGORÍA
-    =============================== */
-    document.getElementById("form-sub").onsubmit = async function(e) {
-      e.preventDefault();
+  modal.style.display = "none";
+  cargarSubcategorias();
+  cargarDisponibles();
+};
 
-const nombre_subcategoria_id = document.getElementById("subSelect").value;
+/* =============================
+   ELIMINAR
+============================= */
+document.addEventListener("click", async e => {
+  if (!e.target.classList.contains("btn-delete")) return;
 
-const resp = await fetch('/api/subcategorias', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    nombre_subcategoria_id,
-    area_conocimiento_id: areaId
-  })
-      });
+  if (!confirm("¿Eliminar subcategoría?")) return;
 
-      if (resp.ok) {
-        modal.style.display = "none";
-        cargarSubcategorias();
-        cargarSubcategoriasDisponibles();
-      } else {
-        const err = await resp.json();
-        alert(err.message);
-      }
-    };
+  const id = e.target.dataset.id;
+  await fetch(`/api/subcategorias/${id}`, { method: "DELETE" });
 
-
-    /* ==============================
-       ELIMINAR SUBCATEGORÍA
-    =============================== */
-    document.addEventListener("click", async function(e) {
-      if (!e.target.classList.contains("btn-delete")) return;
-
-      const id = e.target.getAttribute("data-id");
-
-      if (confirm("¿Seguro que deseas eliminar esta subcategoría?")) {
-        const resp = await fetch(`/api/subcategorias/${id}`, { method: 'DELETE' });
-
-        if (resp.ok) {
-          cargarSubcategorias();
-          cargarSubcategoriasDisponibles();
-        } else {
-          const err = await resp.json();
-          alert(err.message);
-        }
-      }
-    });
-  </script>
-
-  <a href="/areas.html?proyecto=${proyectoId}">Volver a Áreas</a>
+  cargarSubcategorias();
+  cargarDisponibles();
+});
+</script>
 
 </body>
 </html>
