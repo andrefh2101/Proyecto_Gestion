@@ -1,5 +1,6 @@
 // controllers/subcategoriaController.js
 const Subcategoria = require('../models/subcategoriaModel');
+const templates = require("../helpers/subcategoriaTemplates");
 const db = require('../config/db');
 
 const subcategoriaController = {
@@ -16,27 +17,82 @@ const subcategoriaController = {
   },
 
   createSubcategoria: async (req, res) => {
-  try {
-    const { area_conocimiento_id, nombre_subcategoria_id } = req.body;
+    const conn = await db.getConnection();
 
-    if (!area_conocimiento_id || !nombre_subcategoria_id) {
-      return res.status(400).json({ message: "Datos incompletos" });
+    try {
+      const { area_conocimiento_id, nombre_subcategoria_id } = req.body;
+
+      if (!area_conocimiento_id || !nombre_subcategoria_id) {
+        return res.status(400).json({ message: "Datos incompletos" });
+      }
+
+      const existe = await Subcategoria.existe(
+        area_conocimiento_id,
+        nombre_subcategoria_id
+      );
+
+      if (existe) {
+        return res.status(400).json({
+          message: "La subcategoría ya está registrada en esta área."
+        });
+      }
+
+      await conn.beginTransaction();
+
+      // 1️⃣ Crear subcategoría
+      const [result] = await conn.query(
+        `INSERT INTO subcategorias (area_conocimiento_id, nombre_subcategoria_id)
+         VALUES (?, ?)`,
+        [area_conocimiento_id, nombre_subcategoria_id]
+      );
+
+      const subcategoriaId = result.insertId;
+
+      // 2️⃣ Cargar plantilla
+      const plantilla = templates[nombre_subcategoria_id];
+
+      if (plantilla) {
+
+        for (const nombre of plantilla.entradas) {
+          await conn.query(
+            `INSERT INTO entradas_subcategoria (subcategoria_id, nombre)
+             VALUES (?, ?)`,
+            [subcategoriaId, nombre]
+          );
+        }
+
+        for (const nombre of plantilla.herramientas) {
+          await conn.query(
+            `INSERT INTO herramientas_tecnicas_subcategoria (subcategoria_id, nombre)
+             VALUES (?, ?)`,
+            [subcategoriaId, nombre]
+          );
+        }
+
+        for (const nombre of plantilla.salidas) {
+          await conn.query(
+            `INSERT INTO salidas_subcategoria (subcategoria_id, nombre)
+             VALUES (?, ?)`,
+            [subcategoriaId, nombre]
+          );
+        }
+      }
+
+      await conn.commit();
+
+      res.status(201).json({
+        message: "Subcategoría creada con entradas, herramientas y salidas",
+        subcategoria_id: subcategoriaId
+      });
+
+    } catch (error) {
+      await conn.rollback();
+      console.error("❌ Error creando subcategoría:", error);
+      res.status(500).json({ message: "Error al crear subcategoría" });
+    } finally {
+      conn.release();
     }
-
-    const existe = await Subcategoria.existe(area_conocimiento_id, nombre_subcategoria_id);
-    if (existe) {
-      return res.status(400).json({ message: "La subcategoría ya está registrada en esta área." });
-    }
-
-    await Subcategoria.create(area_conocimiento_id, nombre_subcategoria_id);
-    res.status(201).json({ message: "Subcategoría creada correctamente" });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al crear subcategoría");
-  }
-}
-,
+  },
 
   getSubcategoriasDisponibles: async (req, res) => {
     try {

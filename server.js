@@ -37,6 +37,7 @@ app.use(express.static("public"));
 app.use("/api/evaluaciones", evaluacionRoutes);
 app.use("/uploads/evidencias", express.static("uploads/evidencias"));
 app.use("/api/areas", areasRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Archivos estáticos (CSS, imágenes, etc.)
 app.use(express.static(path.join(__dirname, 'public')));

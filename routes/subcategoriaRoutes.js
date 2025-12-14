@@ -2,20 +2,16 @@ const express = require("express");
 const router = express.Router();
 const subcategoriaController = require("../controllers/subcategoriaController");
 
-// /api/subcategorias/:id
-router.get("/:id", subcategoriaController.getSubcategoriaById);
-
-// /api/subcategorias/:id/entradas
-router.get("/:id/entradas", subcategoriaController.getEntradas);
-
-// /api/subcategorias/:id/herramientas
-router.get("/:id/herramientas", subcategoriaController.getHerramientas);
-
-// /api/subcategorias/:id/salidas
-router.get("/:id/salidas", subcategoriaController.getSalidas);
+router.post("/", subcategoriaController.createSubcategoria);
 
 router.get("/:areaId/subcategorias", subcategoriaController.getSubcategoriasByArea);
-
 router.get("/:areaId/subcategorias-disponibles", subcategoriaController.getSubcategoriasDisponibles);
+
+router.delete("/:id", subcategoriaController.deleteSubcategoria);
+
+router.get("/:id", subcategoriaController.getSubcategoriaById);
+router.get("/:id/entradas", subcategoriaController.getEntradas);
+router.get("/:id/herramientas", subcategoriaController.getHerramientas);
+router.get("/:id/salidas", subcategoriaController.getSalidas);
 
 module.exports = router;

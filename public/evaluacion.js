@@ -12,12 +12,13 @@ if (!proyecto_id || !subcategoria_id) {
 
 const API = `/api/evaluaciones/${proyecto_id}/${subcategoria_id}`;
 let evaluacionesMap = {};
+let totalItems = 0;
+let itemsCumplidos = 0;
 
 // ==============================
 // DOM READY
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("🟢 Evaluación cargada");
     cargarDatos();
 });
 
@@ -28,14 +29,25 @@ async function cargarDatos() {
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("📦 DATA:", data);
+    if (!res.ok || !Array.isArray(data.items)) {
+        alert("❌ Error al cargar los datos de evaluación");
+        console.error("Respuesta inválida:", data);
+        return;
+    }
 
     evaluacionesMap = data.evaluaciones || {};
+    document.getElementById("contenedorTablas").innerHTML = "";
+
+    totalItems = 0;
+    itemsCumplidos = 0;
 
     generarTabla("Entradas", data.items.filter(i => i.tipo === "entrada"), "entrada");
     generarTabla("Herramientas / Técnicas", data.items.filter(i => i.tipo === "herramienta"), "herramienta");
     generarTabla("Salidas", data.items.filter(i => i.tipo === "salida"), "salida");
+
+    actualizarPorcentaje();
 }
+
 
 // ==============================
 // GENERAR TABLA
@@ -45,7 +57,7 @@ function generarTabla(titulo, lista, tipo) {
 
     let html = `
         <h3>${titulo}</h3>
-        <table border="1">
+        <table>
             <tr>
                 <th>Ítem</th>
                 <th>Cumplió</th>
@@ -57,8 +69,12 @@ function generarTabla(titulo, lista, tipo) {
     `;
 
     lista.forEach(item => {
+        totalItems++;
+
         const key = `${item.id}_${tipo}`;
         const ev = evaluacionesMap[key] || {};
+
+        if (ev.cumplio == 1) itemsCumplidos++;
 
         html += `
             <tr data-id="${item.id}" data-tipo="${tipo}">
@@ -72,7 +88,7 @@ function generarTabla(titulo, lista, tipo) {
                 <td><textarea data-field="observaciones">${ev.observaciones || ""}</textarea></td>
 
                 <td class="fecha-cell">
-                    ${ev.fecha_cumplimiento || "Ingrese un archivo"}
+                    ${ev.fecha_cumplimiento ? ev.fecha_cumplimiento.split("T")[0] : "-"}
                 </td>
 
                 <td>
@@ -86,16 +102,13 @@ function generarTabla(titulo, lista, tipo) {
     html += "</table>";
     document.getElementById("contenedorTablas").innerHTML += html;
 
-    // ==============================
-    // EVENTO ARCHIVO
-    // ==============================
     document.querySelectorAll(".input-file").forEach(input => {
         input.addEventListener("change", e => subirArchivo(e));
     });
 }
 
 // ==============================
-// SUBIR ARCHIVO (AUTO)
+// SUBIR ARCHIVO
 // ==============================
 async function subirArchivo(e) {
     const tr = e.target.closest("tr");
@@ -115,8 +128,6 @@ async function subirArchivo(e) {
         fecha_cumplimiento: hoy
     };
 
-    console.log("⬆️ Subiendo evaluación:", data);
-
     const formData = new FormData();
     formData.append("archivo", file);
 
@@ -124,17 +135,31 @@ async function subirArchivo(e) {
         if (v !== null) formData.append(k, v);
     });
 
-    const res = await fetch("/api/evaluaciones/upload", {
+    await fetch("/api/evaluaciones/upload", {
         method: "POST",
         body: formData
     });
 
-    const result = await res.json();
-    console.log("✅ Respuesta:", result);
+    // UI
+    if (tr.querySelector(".cumplio-cell").innerText.includes("NO")) {
+        itemsCumplidos++;
+    }
 
-    // 🔄 Actualizar UI
     tr.querySelector(".cumplio-cell").innerText = "✅ SÍ";
     tr.querySelector(".fecha-cell").innerText = hoy;
 
-    alert("✅ Evidencia guardada correctamente");
+    actualizarPorcentaje();
+}
+
+// ==============================
+// PORCENTAJE
+// ==============================
+function actualizarPorcentaje() {
+    const porcentaje = totalItems === 0
+        ? 0
+        : Math.round((itemsCumplidos / totalItems) * 100);
+
+    const barra = document.getElementById("barraProgreso");
+    barra.style.width = porcentaje + "%";
+    barra.innerText = porcentaje + "%";
 }

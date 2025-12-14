@@ -25,6 +25,8 @@ const storage = multer.diskStorage({
     }
 });
 
+
+
 const upload = multer({ storage });
 
 // ===============================
@@ -33,7 +35,14 @@ const upload = multer({ storage });
 router.get("/:proyecto_id/:subcategoria_id", evaluacionController.getBySubcategoria);
 router.post("/save", evaluacionController.save);
 router.post("/upload", upload.single("archivo"), evaluacionController.upload);
-
+router.get(
+  "/porcentaje/:proyecto_id/:subcategoria_id",
+  evaluacionController.getPorcentaje
+);
+router.get(
+  "/progreso/:proyecto_id/:subcategoria_id",
+  evaluacionController.getProgreso
+);
 module.exports = router;
 
 
