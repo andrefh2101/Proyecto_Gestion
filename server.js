@@ -38,6 +38,7 @@ app.use("/api/evaluaciones", evaluacionRoutes);
 app.use("/uploads/evidencias", express.static("uploads/evidencias"));
 app.use("/api/areas", areasRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Archivos estáticos (CSS, imágenes, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -69,6 +70,7 @@ app.post('/api/areas', areaConocimientoController.createArea);
 app.get('/api/proyectos/:proyectoId/areas-disponibles', areaConocimientoController.getAvailableAreas);
 app.get('/api/areas/:areaId/subcategorias-disponibles', subcategoriaController.getSubcategoriasDisponibles);
 app.delete('/api/subcategorias/:id', subcategoriaController.deleteSubcategoria);
+app.delete('/api/proyectos/:id', projectController.deleteProject);
 
 router.get("/:id", subcategoriaController.getSubcategoriaById);
 router.get("/:id/entradas", subcategoriaController.getEntradasBySubcategoria);

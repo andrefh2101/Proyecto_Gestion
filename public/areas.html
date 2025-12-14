@@ -1,5 +1,3 @@
-
-<!-- public/areas.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,253 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Áreas de Conocimiento</title>
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 25px;
-      color: #333;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: #222;
-    }
-
-    /* GRID */
-    #areas-lista {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    /* CARD */
-    .area-card {
-      background: #fff;
-      padding: 22px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      cursor: pointer;
-      transition: transform .15s, box-shadow .2s;
-      text-align: center;
-    }
-
-    .area-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    }
-
-    .area-card h4 {
-      margin: 0;
-      font-size: 1.2rem;
-      color: #111;
-    }
-
-    /* BOTONES */
-    button {
-      background: #2563eb;
-      padding: 12px 18px;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background .2s;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background: #1e4ecb;
-    }
-
-    #crearAreaBtn {
-      display: block;
-      margin: 25px auto;
-    }
-
-    /* MODAL GLASS */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      justify-content: center;
-      align-items: center;
-      z-index: 50;
-    }
-
-    .modal-content {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 25px;
-      border-radius: 14px;
-      width: 330px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      animation: fadeIn .25s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(.95); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    select, input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin: 10px 0;
-      font-size: 1rem;
-    }
-
-    a {
-      display: block;
-      text-align: center;
-      margin-top: 30px;
-      text-decoration: none;
-      color: #2563eb;
-      font-weight: 500;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="/css/estiloareas.css">
 </head>
 
 <body>
 
+<header class="header">
   <h1>Áreas de Conocimiento</h1>
+  <button id="crearAreaBtn" class="primary-btn">➕ Nueva Área</button>
+</header>
 
-  <div id="areas-lista"></div>
+<main>
+  <div id="areas-lista" class="grid"></div>
+</main>
 
-  <button id="crearAreaBtn">Crear Área</button>
+<!-- ================= MODAL CREAR ÁREA ================= -->
+<div id="areaModal" class="modal">
+  <div class="modal-content">
+    <h3>Nueva Área</h3>
 
-  <!-- MODAL -->
-  <div id="areaModal" class="modal">
-    <div class="modal-content">
-      <h3>Nueva Área</h3>
+    <form id="form-area">
+      <label>Área de Conocimiento</label>
+      <select id="nombreArea" required></select>
 
-      <form id="form-area">
-        <label>Área de Conocimiento:</label>
-        <select id="nombreArea" required></select>
-
-        <input type="hidden" id="proyectoID">
-
-        <button type="submit">Crear</button>
-      </form>
-
-      <button id="closeAreaModal" style="background:#dc2626;">Cerrar</button>
-    </div>
+      <div class="modal-actions">
+        <button type="submit" class="primary-btn">Crear</button>
+        <button type="button" id="closeAreaModal" class="secondary-btn">
+          Cancelar
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const proyectoId = urlParams.get("proyecto");
-
-    document.getElementById("proyectoID").value = proyectoId;
-
-    // ==============================
-    // CARGAR ÁREAS EXISTENTES
-    // ==============================
-    async function cargarAreas() {
-      const resp = await fetch(`/api/proyectos/${proyectoId}/areas`);
-      const areas = await resp.json();
-
-      const lista = document.getElementById("areas-lista");
-      lista.innerHTML = "";
-
-      if (areas.length === 0) {
-        lista.innerHTML = `<p style="text-align:center;">No hay áreas registradas.</p>`;
-        return;
-      }
-
-      areas.forEach(area => {
-        const div = document.createElement("div");
-        div.classList.add("area-card");
-
-        div.innerHTML = `<h4>${area.nombre}</h4>`;
-        div.onclick = () => 
-  window.location.href = `/subcategorias.html?area=${area.id}&proyecto=${proyectoId}`;
+<footer class="footer">
+  <button id="volverProyectos" class="secondary-btn">
+    ← Volver a proyectos
+  </button>
+</footer>
 
 
-        lista.appendChild(div);
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const params = new URLSearchParams(window.location.search);
+  const proyectoId = params.get('proyecto');
+
+  const lista = document.getElementById('areas-lista');
+  const modal = document.getElementById('areaModal');
+  const selectArea = document.getElementById('nombreArea');
+
+  /* ================= CARGAR ÁREAS ================= */
+  async function cargarAreas() {
+
+    const res = await fetch(`/api/proyectos/${proyectoId}/areas`);
+    const areas = await res.json();
+
+    lista.innerHTML = '';
+
+    if (areas.length === 0) {
+      lista.innerHTML = `
+        <p class="empty-state">
+          No hay áreas registradas aún
+        </p>`;
+      return;
+    }
+
+    areas.forEach(area => {
+
+      const card = document.createElement('div');
+      card.className = 'area-card';
+
+      card.innerHTML = `
+        <h3>${area.nombre}</h3>
+      `;
+
+      card.addEventListener('click', () => {
+        window.location.href =
+          `/subcategorias.html?area=${area.id}&proyecto=${proyectoId}`;
+      });
+
+      lista.appendChild(card);
+    });
+  }
+
+  cargarAreas();
+
+  /* ================= ABRIR MODAL ================= */
+  document.getElementById('crearAreaBtn').addEventListener('click', async () => {
+
+    const res = await fetch(`/api/proyectos/${proyectoId}/areas-disponibles`);
+    const disponibles = await res.json();
+
+    selectArea.innerHTML = '';
+
+    if (disponibles.length === 0) {
+      const opt = document.createElement('option');
+      opt.textContent = 'No hay áreas disponibles';
+      opt.disabled = true;
+      selectArea.appendChild(opt);
+    } else {
+      disponibles.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.nombre;
+        selectArea.appendChild(opt);
       });
     }
 
-    cargarAreas();
+    modal.classList.add('show');
+  });
 
-    // ==============================
-    // MODAL
-    // ==============================
-    const modal = document.getElementById("areaModal");
-    const closeBtn = document.getElementById("closeAreaModal");
+  /* ================= CERRAR MODAL ================= */
+  document.getElementById('closeAreaModal').addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
 
-    closeBtn.onclick = () => modal.style.display = "none";
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
 
-    window.onclick = (e) => {
-      if (e.target === modal) modal.style.display = "none";
-    };
+  /* ================= CREAR ÁREA ================= */
+  document.getElementById('form-area').addEventListener('submit', async (e) => {
 
-    // ==============================
-    // CARGAR ÁREAS DISPONIBLES
-    // ==============================
-    async function cargarAreasDisponibles() {
-      const resp = await fetch(`/api/proyectos/${proyectoId}/areas-disponibles`);
-      const disponibles = await resp.json();
+    e.preventDefault();
 
-      const select = document.getElementById("nombreArea");
-      select.innerHTML = "";
+    const tipo_id = selectArea.value;
 
-      if (disponibles.length === 0) {
-        select.innerHTML = `<option disabled>No hay áreas disponibles</option>`;
-        return;
-      }
+    const res = await fetch('/api/areas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tipo_id,
+        proyecto_id: proyectoId
+      })
+    });
 
-      disponibles.forEach(area => {
-        const option = document.createElement("option");
-        option.value = area.id;
-        option.textContent = area.nombre;
-        select.appendChild(option);
-      });
+    if (res.ok) {
+      modal.classList.remove('show');
+      cargarAreas();
+    } else {
+      alert('Error al crear el área');
     }
+  });
 
-    document.getElementById("crearAreaBtn").onclick = async () => {
-      await cargarAreasDisponibles();
-      modal.style.display = "flex";
-    };
+  document.getElementById('volverProyectos')
+  .addEventListener('click', () => {
+    window.location.href = '/proyectos';
+  });
 
-    // ==============================
-    // CREAR ÁREA
-    // ==============================
-    document.getElementById("form-area").onsubmit = async function(e) {
-      e.preventDefault();
 
-      const tipo_id = document.getElementById("nombreArea").value;
-
-      const resp = await fetch('/api/areas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo_id, proyecto_id: proyectoId })
-      });
-
-      if (resp.ok) {
-        modal.style.display = "none";
-        cargarAreas();
-      }
-    };
-  </script>
-
-  <a href="/proyectos">Volver a proyectos</a>
+});
+</script>
 
 </body>
 </html>

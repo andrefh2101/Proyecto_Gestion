@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Matriz de Evaluación</title>
+  <meta charset="UTF-8">
+  <title>Matriz de Evaluación</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 25px;
-            background: #f7f9fb;
-        }
-        h2 { color: #1e3a8a; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        th {
-            background: #e5e7eb;
-            padding: 10px;
-        }
-        td {
-            border-bottom: 1px solid #ddd;
-            padding: 8px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 6px;
-        }
-        textarea {
-            resize: vertical;
-            height: 60px;
-        }
-        .ok { background: #e0ffe0; }
-    </style>
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="/css/estiloevaluacion.css">
 </head>
+
 <body>
 
-<h2>Matriz de Evaluación</h2>
-<div class="progreso">
-    <strong>Porcentaje de Completación:</strong>
-    <div class="barra">
-        <div id="barraProgreso" class="barra-inner">0%</div>
-    </div>
+<header class="header">
+  <h2 id="tituloSubcategoria">Matriz de Evaluación</h2>
+</header>
+
+
+<section class="progreso">
+  <div class="progreso-header">
+    <span>Porcentaje de completación</span>
+    <strong id="porcentajeTexto"></strong>
+  </div>
+
+  <div class="barra">
+    <div id="barraProgreso" class="barra-inner" style="width:0%">0%</div>
+  </div>
+</section>
+
+<main id="contenedorTablas"></main>
+
+<!-- 🔹 ACCIONES -->
+<div class="acciones">
+  <!-- 🆕 BOTÓN VOLVER -->
+  <button id="btnVolver" class="secondary-btn">
+    ⬅ Volver a Subcategorías
+  </button>
+
+  <button id="btnGuardar" class="primary-btn">
+    💾 Guardar Evaluación
+  </button>
 </div>
 
-<div id="contenedorTablas"></div>
-
-
-
-<!-- Botón opcional -->
-<button id="btnGuardar">Guardar Evaluación</button>
+<!-- 🔹 MODAL ALERTA -->
+<div id="alertaModal" class="alerta-modal">
+  <div class="alerta-box">
+    <div class="alerta-icon success">✔</div>
+    <h3 id="alertaTitulo">Correcto</h3>
+    <p id="alertaMensaje">Mensaje</p>
+    <button id="alertaBtn">Aceptar</button>
+  </div>
+</div>
 
 <script src="evaluacion.js"></script>
+
+<!-- 🆕 SCRIPT VOLVER (NO TOCA evaluacion.js) -->
+<script>
+  const query = new URLSearchParams(window.location.search);
+
+  const area = query.get("area");
+  const proyecto = query.get("proyecto");
+  const nombreSubcategoria = query.get("nombre");
+
+  /* ===== TÍTULO ===== */
+  if (nombreSubcategoria) {
+    document.getElementById("tituloSubcategoria").textContent = nombreSubcategoria;
+  }
+
+  /* ===== BOTÓN VOLVER ===== */
+  document.getElementById("btnVolver").addEventListener("click", () => {
+    window.location.href = `/subcategorias.html?area=${area}&proyecto=${proyecto}`;
+  });
+</script>
+
+
 
 </body>
 </html>

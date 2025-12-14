@@ -47,7 +47,11 @@ document.getElementById("btnGuardar").addEventListener("click", async () => {
             return;
         }
 
-        alert(`✅ Evaluación guardada (${porcentaje}%)`);
+        mostrarAlerta(
+  'Evaluación guardada',
+  `El avance actual es del ${porcentaje}%`
+);
+
 
     } catch (err) {
         console.error(err);
@@ -55,6 +59,18 @@ document.getElementById("btnGuardar").addEventListener("click", async () => {
     }
 });
 
+function mostrarAlerta(titulo, mensaje) {
+  const modal = document.getElementById('alertaModal');
+
+  document.getElementById('alertaTitulo').textContent = titulo;
+  document.getElementById('alertaMensaje').textContent = mensaje;
+
+  modal.classList.add('show');
+
+  document.getElementById('alertaBtn').onclick = () => {
+    modal.classList.remove('show');
+  };
+}
 
 // ==============================
 // CARGAR MATRIZ
@@ -194,6 +210,22 @@ function actualizarPorcentaje() {
         : Math.round((itemsCumplidos / totalItems) * 100);
 
     const barra = document.getElementById("barraProgreso");
+    const texto = document.getElementById("porcentajeTexto");
+
+    // Texto y ancho
     barra.style.width = porcentaje + "%";
     barra.innerText = porcentaje + "%";
+    texto.textContent = porcentaje + "%";
+
+    // Limpiar colores anteriores
+    barra.classList.remove("red", "yellow", "green");
+
+    // Aplicar color (MISMA LÓGICA QUE SUBCATEGORÍAS)
+    if (porcentaje >= 70) {
+        barra.classList.add("green");
+    } else if (porcentaje >= 40) {
+        barra.classList.add("yellow");
+    } else {
+        barra.classList.add("red");
+    }
 }

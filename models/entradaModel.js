@@ -14,12 +14,12 @@ const Entrada = {
     return results;
   },
 
-  async create(subcategoria_id, nombre) {
-    const query = `
-      INSERT INTO herramientas_tecnicas_subcategoria (subcategoria_id, nombre)
+  create: async (subcategoriaId, nombre) => {
+    const sql = `
+      INSERT INTO entradas_subcategoria (subcategoria_id, nombre)
       VALUES (?, ?)
     `;
-    const [result] = await db.query(query, [subcategoria_id, nombre]);
+    const [result] = await db.query(sql, [subcategoriaId, nombre]);
     return result.insertId;
   }
 

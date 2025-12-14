@@ -28,7 +28,17 @@ const Project = {
     } catch (err) {
       throw err;
     }
+  },
+
+  deleteById: async (projectId) => {
+  try {
+    const sql = `DELETE FROM proyectos WHERE id = ?`;
+    const [result] = await db.query(sql, [projectId]);
+    return result.affectedRows;
+  } catch (err) {
+    throw err;
   }
+}
 
 };
 

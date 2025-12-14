@@ -1,0 +1,204 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 30px;
+  background: #f4f6fb;
+  color: #1f2937;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+}
+
+/* TOTAL */
+.total-card {
+  max-width: 500px;
+  margin: 0 auto 25px;
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.1);
+  text-align: center;
+}
+
+.total-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* PROGRESS */
+.progress-container {
+  background: #e5e7eb;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  transition: width .4s ease;
+}
+
+.red { background: #dc2626; }
+.yellow { background: #f59e0b; }
+.green { background: #16a34a; }
+
+.progress-text {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* CARD */
+.sub-card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn .3s ease;
+}
+
+.sub-link {
+  font-weight: 600;
+  color: #1e40af;
+  text-decoration: none;
+}
+
+.sub-link:hover {
+  text-decoration: underline;
+}
+
+/* BOTONES */
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.btn-delete {
+  background: #e11d48;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: .9;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  width: 320px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
+  animation: scaleIn .25s ease;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* SPINNER */
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.footer a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ===============================
+   BOTÓN VOLVER (SECUNDARIO)
+================================ */
+.secondary-btn {
+  display: block;
+  margin: 40px auto 0;
+  background: white;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  padding: 14px 28px; /* MISMO que Guardar */
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(37,99,235,.25); /* MISMA profundidad */
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+
+.secondary-btn:hover {
+  background: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(37,99,235,.35);
+}

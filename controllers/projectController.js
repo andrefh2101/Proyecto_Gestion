@@ -40,6 +40,36 @@ createProject: async (req, res) => {
       message: 'Error al crear el proyecto'
     });
   }
+},
+
+// Eliminar proyecto
+deleteProject: async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleted = await Project.deleteById(id);
+
+    if (deleted === 0) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Proyecto no encontrado'
+      });
+    }
+
+    console.log(`🗑️ Proyecto eliminado ID: ${id}`);
+
+    res.json({
+      ok: true,
+      message: 'Proyecto eliminado correctamente'
+    });
+
+  } catch (error) {
+    console.error('❌ Error al eliminar proyecto:', error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error al eliminar el proyecto'
+    });
+  }
 }
 
 };
