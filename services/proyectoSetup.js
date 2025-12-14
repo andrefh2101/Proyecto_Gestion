@@ -19,7 +19,6 @@ const crearEstructuraProyecto = async (proyectoId) => {
 
     const template = templates[nombreSubId];
     if (!template) {
-      console.warn('⚠️ No hay template para', nombreSubId);
       continue;
     }
 
