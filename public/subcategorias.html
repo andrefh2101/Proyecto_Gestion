@@ -182,21 +182,63 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarSubcategorias();
   });
 
-  /* ================= ELIMINAR ================= */
-  lista.addEventListener('click', async e => {
+  let subcategoriaAEliminar = null;
 
-    if (!e.target.classList.contains('btn-delete')) return;
-    if (!confirm('¿Eliminar subcategoría?')) return;
+/* ================= ELIMINAR (MODAL) ================= */
+lista.addEventListener('click', e => {
+  if (!e.target.classList.contains('btn-delete')) return;
 
-    await fetch(`/api/subcategorias/${e.target.dataset.id}`, {
-      method: 'DELETE'
-    });
+  subcategoriaAEliminar = e.target.dataset.id;
+  document.getElementById('deleteModal').classList.add('show');
+});
 
-    cargarSubcategorias();
+/* CONFIRMAR */
+document.getElementById('confirmDelete').addEventListener('click', async () => {
+  if (!subcategoriaAEliminar) return;
+
+  await fetch(`/api/subcategorias/${subcategoriaAEliminar}`, {
+    method: 'DELETE'
   });
+
+  document.getElementById('deleteModal').classList.remove('show');
+  subcategoriaAEliminar = null;
+  cargarSubcategorias();
+});
+
+/* CANCELAR */
+document.getElementById('cancelDelete').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.remove('show');
+  subcategoriaAEliminar = null;
+});
+
+/* CERRAR AL HACER CLICK FUERA */
+document.getElementById('deleteModal').addEventListener('click', e => {
+  if (e.target.id === 'deleteModal') {
+    e.target.classList.remove('show');
+    subcategoriaAEliminar = null;
+  }
+});
+
 
 });
 </script>
+
+<!-- ===== MODAL ELIMINAR ===== -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h3>¿Eliminar subcategoría?</h3>
+    <p>Esta acción no se puede deshacer.</p>
+
+    <div class="modal-actions">
+      <button id="confirmDelete" class="primary-btn danger">
+        Eliminar
+      </button>
+      <button id="cancelDelete" class="secondary-btn">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
