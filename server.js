@@ -76,15 +76,8 @@ router.get("/:id/herramientas", subcategoriaController.getHerramientasBySubcateg
 router.get("/:id/salidas", subcategoriaController.getSalidasBySubcategoria);
 
 // Ruta para crear proyectos (API)
-app.post('/api/proyectos', async (req, res) => {
-  const { nombre, porcentaje_avance } = req.body;
-  try {
-    await Project.create(nombre, porcentaje_avance); // Crear el proyecto en la base de datos
-    res.status(201).send({ message: 'Proyecto creado con éxito' }); // Responder con un mensaje de éxito
-  } catch (err) {
-    res.status(500).send('Error al crear el proyecto');
-  }
-});
+app.post('/api/proyectos', projectController.createProject);
+
 app.get('/api/areas/:areaId/subcategorias', subcategoriaController.getSubcategoriasByArea);
 app.post('/api/subcategorias', subcategoriaController.createSubcategoria);
 

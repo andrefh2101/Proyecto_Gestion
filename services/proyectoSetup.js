@@ -1,26 +1,49 @@
-// services/proyectoSetup.js
-const AreaConocimiento = require("../models/areaConocimientoModel");
-const Subcategoria = require("../models/subcategoriaModel");
+const AreaConocimiento = require('../models/areaConocimientoModel');
+const Subcategoria = require('../models/subcategoriaModel');
+const Entrada = require('../models/entradaModel');
+const Herramienta = require('../models/herramientaModel');
+const Salida = require('../models/salidaModel');
 
-async function crearEstructuraProyecto(proyecto_id) {
-  try {
-    // 1. Crear área con tipo_id = 5
-    const area = await AreaConocimiento.create(5, proyecto_id);
-    const area_id = area.insertId;
+const templates = require('../helpers/subcategoriaTemplates');
 
-    // 2. Crear 6 subcategorías para esa área
-    const subcategorias = [1, 2, 3, 4, 5, 6];
+const crearEstructuraProyecto = async (proyectoId) => {
 
-    for (const nombre_id of subcategorias) {
-      await Subcategoria.create(area_id, nombre_id);
+  console.log('🟢 Creando estructura para proyecto:', proyectoId);
+
+  const areaId = await AreaConocimiento.create(5, proyectoId);
+  console.log('🟢 Área creada ID:', areaId);
+
+  const subcategorias = [1, 2, 3, 4, 5, 6];
+
+  for (const nombreSubId of subcategorias) {
+
+    const subcategoriaId = await Subcategoria.create(areaId, nombreSubId);
+    console.log(`  🟡 Subcategoría creada ID: ${subcategoriaId}`);
+
+    const template = templates[nombreSubId];
+    if (!template) {
+      console.warn('⚠️ No hay template para', nombreSubId);
+      continue;
     }
 
-    return true;
+    for (const entrada of template.entradas) {
+      await Entrada.create(subcategoriaId, entrada);
+      console.log('    ➕ Entrada:', entrada);
+    }
 
-  } catch (err) {
-    console.error("Error creando estructura automática:", err);
-    throw err;
+    for (const herramienta of template.herramientas) {
+      await Herramienta.create(subcategoriaId, herramienta);
+      console.log('    🛠️ Herramienta:', herramienta);
+    }
+
+    for (const salida of template.salidas) {
+      await Salida.create(subcategoriaId, salida);
+      console.log('    📤 Salida:', salida);
+    }
   }
-}
+
+  console.log('✅ Estructura creada correctamente');
+};
+
 
 module.exports = crearEstructuraProyecto;

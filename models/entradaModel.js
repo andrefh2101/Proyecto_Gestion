@@ -12,6 +12,15 @@ const Entrada = {
 
     const results = await db.query(query, [subcategoria_id]);
     return results;
+  },
+
+  async create(subcategoria_id, nombre) {
+    const query = `
+      INSERT INTO herramientas_tecnicas_subcategoria (subcategoria_id, nombre)
+      VALUES (?, ?)
+    `;
+    const [result] = await db.query(query, [subcategoria_id, nombre]);
+    return result.insertId;
   }
 
 };

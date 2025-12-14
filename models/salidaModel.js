@@ -14,6 +14,15 @@ const Salida = {
       console.error("Error en Salida.getBySubcategoriaId:", error);
       throw error;
     }
+  },
+
+  async create(subcategoria_id, nombre) {
+    const query = `
+      INSERT INTO salidas_subcategoria (subcategoria_id, nombre)
+      VALUES (?, ?)
+    `;
+    const [result] = await db.query(query, [subcategoria_id, nombre]);
+    return result.insertId;
   }
 
 };

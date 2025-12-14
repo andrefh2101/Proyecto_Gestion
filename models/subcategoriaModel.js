@@ -5,11 +5,13 @@ const Subcategoria = {
 
   // Crear una subcategoría
   async create(area_conocimiento_id, nombre_subcategoria_id) {
-    const query = `
+    const sql = `
       INSERT INTO subcategorias (area_conocimiento_id, nombre_subcategoria_id)
       VALUES (?, ?)
     `;
-    return await db.query(query, [area_conocimiento_id, nombre_subcategoria_id]);
+
+    const [result] = await db.query(sql, [area_conocimiento_id, nombre_subcategoria_id]);
+    return result.insertId;
   },
 
   // Obtener subcategorías de un área

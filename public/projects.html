@@ -208,19 +208,30 @@
 
     // --- Enviar Formulario ---
     document.getElementById('crear-proyecto-form').onsubmit = async (e) => {
-      e.preventDefault();
+  e.preventDefault();
 
-      const nombre = document.getElementById('nombre').value;
+  const nombre = document.getElementById('nombre').value;
 
-      await fetch('/api/proyectos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, porcentaje_avance: 0 })
-      });
+  try {
+    const response = await fetch('/crear-proyecto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre })
+    });
 
-      modal.style.display = 'none';
-      showSuccessModal();
-    };
+    if (!response.ok) {
+      throw new Error('Error al crear el proyecto');
+    }
+
+    modal.style.display = 'none';
+    showSuccessModal();
+
+  } catch (error) {
+    console.error('❌ Error:', error);
+    alert('Error al crear el proyecto');
+  }
+};
+
 
     // --- Modal Éxito ---
     function showSuccessModal() {

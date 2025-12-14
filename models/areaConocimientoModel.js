@@ -4,17 +4,14 @@ const db = require('../config/db');
 const AreaConocimiento = {
 
   // Crear un área
-  create: async (tipo_id, proyecto_id) => {
-    try {
-      const sql = `
-        INSERT INTO areas_conocimiento (tipo_id, proyecto_id)
-        VALUES (?, ?)
-      `;
-      const [result] = await db.query(sql, [tipo_id, proyecto_id]);
-      return result;
-    } catch (err) {
-      throw err;
-    }
+  async create(tipo_id, proyecto_id) {
+    const sql = `
+      INSERT INTO areas_conocimiento (tipo_id, proyecto_id)
+      VALUES (?, ?)
+    `;
+
+    const [result] = await db.query(sql, [tipo_id, proyecto_id]);
+    return result.insertId; // ✅ SOLO el ID
   },
 
 

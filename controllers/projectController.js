@@ -18,35 +18,30 @@ const projectController = {
   },
 
   // Crea un nuevo proyecto
-  createProject: async (req, res) => {
-    const { nombre } = req.body;
-    const porcentaje_avance = 0;
+  // controllers/projectController.js
+createProject: async (req, res) => {
+  console.log('🔥 ENTRO AL createProject DEL CONTROLLER WEB');
 
-    try {
-      // 1. Crear proyecto
-      const proyectoId = await Project.create(nombre, porcentaje_avance);
+  const { nombre } = req.body;
 
-      // 2. Crear automáticamente área de conocimiento tipo 5
-      const tipo_id = 5;
-      const areaResult = await AreaConocimiento.create(tipo_id, proyectoId);
-      const areaId = areaResult.insertId;
+  try {
+    const proyectoId = await Project.create(nombre, 0);
+    await crearEstructuraProyecto(proyectoId);
 
-      // 3. Crear automáticamente subcategorías del 1 al 6
-      const subcategoriasAuto = [1, 2, 3, 4, 5, 6];
+    res.status(201).json({
+      ok: true,
+      proyectoId
+    });
 
-      for (let nombre_subcategoria_id of subcategoriasAuto) {
-        await Subcategoria.create(areaId, nombre_subcategoria_id);
-      }
-
-      console.log("Área de conocimiento y subcategorías creadas automáticamente");
-
-      res.redirect('/proyectos');
-
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Error al crear el proyecto');
-    }
+  } catch (error) {
+    console.error('❌ Error al crear proyecto:', error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error al crear el proyecto'
+    });
   }
+}
+
 };
 
 module.exports = projectController;
