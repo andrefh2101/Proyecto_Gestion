@@ -42,7 +42,7 @@ const subcategoriaController = {
       // 1️⃣ Crear subcategoría
       const [result] = await conn.query(
         `INSERT INTO subcategorias (area_conocimiento_id, nombre_subcategoria_id)
-         VALUES (?, ?)`,
+         VALUES (?, ?)` ,
         [area_conocimiento_id, nombre_subcategoria_id]
       );
 
@@ -56,7 +56,7 @@ const subcategoriaController = {
         for (const nombre of plantilla.entradas) {
           await conn.query(
             `INSERT INTO entradas_subcategoria (subcategoria_id, nombre)
-             VALUES (?, ?)`,
+             VALUES (?, ?)` ,
             [subcategoriaId, nombre]
           );
         }
@@ -64,7 +64,7 @@ const subcategoriaController = {
         for (const nombre of plantilla.herramientas) {
           await conn.query(
             `INSERT INTO herramientas_tecnicas_subcategoria (subcategoria_id, nombre)
-             VALUES (?, ?)`,
+             VALUES (?, ?)` ,
             [subcategoriaId, nombre]
           );
         }
@@ -72,7 +72,7 @@ const subcategoriaController = {
         for (const nombre of plantilla.salidas) {
           await conn.query(
             `INSERT INTO salidas_subcategoria (subcategoria_id, nombre)
-             VALUES (?, ?)`,
+             VALUES (?, ?)` ,
             [subcategoriaId, nombre]
           );
         }
@@ -173,73 +173,95 @@ const subcategoriaController = {
   //  NUEVAS FUNCIONES DIRECTAS A BD
   // =============================
 
-getSubcategoriaById: async (req, res) => {
-  try {
-    db.query(
-      "SELECT * FROM nombre_subcategorias WHERE id = ?",
-      [req.params.id],
-      (err, rows) => {
-        if (err) {
-          console.error("ERROR EN getSubcategoriaById:", err);
-          return res.status(500).json({ message: err.message });
+  getSubcategoriaById: async (req, res) => {
+    try {
+      db.query(
+        "SELECT * FROM nombre_subcategorias WHERE id = ?",
+        [req.params.id],
+        (err, rows) => {
+          if (err) {
+            console.error("ERROR EN getSubcategoriaById:", err);
+            return res.status(500).json({ message: err.message });
+          }
+
+          if (rows.length === 0)
+            return res.status(404).json({ message: "No encontrada" });
+
+          res.json(rows[0]);
         }
+      );
+    } catch (error) {
+      console.error("ERROR EN getSubcategoriaById:", error);
+      res.status(500).json({ message: error.message });
+    }
+  },
 
-        if (rows.length === 0)
-          return res.status(404).json({ message: "No encontrada" });
+  getEntradasBySubcategoria: async (req, res) => {
+    try {
+      const [rows] = await db.execute(
+        "SELECT id, nombre FROM entradas_subcategoria WHERE subcategoria_id = ?",
+        [req.params.id]
+      );
 
-        res.json(rows[0]);
+      res.json(rows);
+    } catch (error) {
+      console.error("ERROR en Entradas:", error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  getHerramientasBySubcategoria: async (req, res) => {
+    try {
+      const [rows] = await db.execute(
+        "SELECT id, nombre FROM herramientas_tecnicas_subcategoria WHERE subcategoria_id = ?",
+        [req.params.id]
+      );
+
+      res.json(rows);
+    } catch (error) {
+      console.error("ERROR en Herramientas:", error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  getSalidasBySubcategoria: async (req, res) => {
+    try {
+      const [rows] = await db.execute(
+        "SELECT id, nombre FROM salidas_subcategoria WHERE subcategoria_id = ?",
+        [req.params.id]
+      );
+
+      res.json(rows);
+    } catch (error) {
+      console.error("ERROR en Salidas:", error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  // =============================
+  //  ✅ ACTUALIZAR PORCENTAJE
+  // =============================
+  updatePorcentaje: async (req, res) => {
+    try {
+      const { proyecto_id, subcategoria_id, porcentaje } = req.body;
+
+      if (porcentaje === undefined) {
+        return res.status(400).json({ error: "Porcentaje requerido" });
       }
-    );
-  } catch (error) {
-    console.error("ERROR EN getSubcategoriaById:", error);
-    res.status(500).json({ message: error.message });
+
+      await Subcategoria.updatePorcentaje(
+        proyecto_id,
+        subcategoria_id,
+        porcentaje
+      );
+
+      res.json({ success: true });
+
+    } catch (error) {
+      console.error("❌ Error updatePorcentaje:", error);
+      res.status(500).json({ error: "Error al actualizar porcentaje" });
+    }
   }
-},
-
-
-getEntradasBySubcategoria: async (req, res) => {
-  try {
-    const [rows] = await db.execute(
-      "SELECT id, nombre FROM entradas_subcategoria WHERE subcategoria_id = ?",
-      [req.params.id]
-    );
-
-    res.json(rows);
-  } catch (error) {
-    console.error("ERROR en Entradas:", error);
-    res.status(500).json({ message: error.message });
-  }
-},
-
-getHerramientasBySubcategoria: async (req, res) => {
-  try {
-    const [rows] = await db.execute(
-      "SELECT id, nombre FROM herramientas_tecnicas_subcategoria WHERE subcategoria_id = ?",
-      [req.params.id]
-    );
-
-    res.json(rows);
-  } catch (error) {
-    console.error("ERROR en Herramientas:", error);
-    res.status(500).json({ message: error.message });
-  }
-},
-
-getSalidasBySubcategoria: async (req, res) => {
-  try {
-    const [rows] = await db.execute(
-      "SELECT id, nombre FROM salidas_subcategoria WHERE subcategoria_id = ?",
-      [req.params.id]
-    );
-
-    res.json(rows);
-  } catch (error) {
-    console.error("ERROR en Salidas:", error);
-    res.status(500).json({ message: error.message });
-  }
-}
-
-
 
 };
 

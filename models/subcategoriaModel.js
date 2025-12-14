@@ -17,7 +17,8 @@ const Subcategoria = {
   const query = `
     SELECT 
       s.id AS subcategoria_id,
-      ns.nombre
+      ns.nombre,
+      s.porcentaje
     FROM subcategorias s
     JOIN nombre_subcategorias ns 
       ON ns.id = s.nombre_subcategoria_id
@@ -25,9 +26,18 @@ const Subcategoria = {
   `;
 
   const [rows] = await db.query(query, [area_conocimiento_id]);
-  return rows; // 🔥 SOLO LOS DATOS
+  return rows;
 }
 ,
+async actualizarPorcentaje(subcategoria_id, porcentaje) {
+    const sql = `
+      UPDATE subcategorias
+      SET porcentaje = ?
+      WHERE id = ?
+    `;
+    await db.query(sql, [porcentaje, subcategoria_id]);
+    return true;
+  },
 
   // Validar que no exista duplicado
   async existe(area_conocimiento_id, nombre_subcategoria_id) {
@@ -111,7 +121,17 @@ const Subcategoria = {
       WHERE subcategoria_id = ?
     `;
     return await db.query(query, [subcategoria_id]);
-  }
+  },
+
+  async updatePorcentaje(proyecto_id, subcategoria_id, porcentaje) {
+    const sql = `
+        UPDATE subcategorias
+        SET porcentaje = ?
+        WHERE id = ?
+    `;
+    await db.query(sql, [porcentaje, subcategoria_id]);
+}
+
 
 };
 

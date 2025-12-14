@@ -13,5 +13,7 @@ router.get("/:id", subcategoriaController.getSubcategoriaById);
 router.get("/:id/entradas", subcategoriaController.getEntradas);
 router.get("/:id/herramientas", subcategoriaController.getHerramientas);
 router.get("/:id/salidas", subcategoriaController.getSalidas);
+router.post("/subcategorias/porcentaje", subcategoriaController.updatePorcentaje);
+
 
 module.exports = router;

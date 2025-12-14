@@ -1,5 +1,6 @@
 const evaluacionModel = require("../models/evaluacionModel");
 const itemsModel = require("../models/itemsModel");
+const subcategoriaModel = require("../models/subcategoriaModel");
 
 // =======================================================
 // 1) OBTENER MATRIZ COMPLETA
@@ -128,4 +129,28 @@ exports.getProgreso = async (req, res) => {
         console.error("Error progreso:", error);
         res.status(500).json({ error: "Error al calcular progreso" });
     }
+};
+
+// =======================================================
+// 6) GUARDAR PORCENTAJE FINAL
+// =======================================================
+exports.savePorcentaje = async (req, res) => {
+  try {
+    const { subcategoria_id, porcentaje } = req.body;
+
+    if (!subcategoria_id || porcentaje === undefined) {
+      return res.status(400).json({ error: "Datos incompletos" });
+    }
+
+    await subcategoriaModel.actualizarPorcentaje(
+      subcategoria_id,
+      Number(porcentaje)
+    );
+
+    res.json({ message: "Porcentaje guardado correctamente" });
+
+  } catch (error) {
+    console.error("❌ Error guardando porcentaje:", error);
+    res.status(500).json({ error: "Error al guardar porcentaje" });
+  }
 };

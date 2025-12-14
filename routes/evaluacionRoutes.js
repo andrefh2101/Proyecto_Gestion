@@ -43,6 +43,8 @@ router.get(
   "/progreso/:proyecto_id/:subcategoria_id",
   evaluacionController.getProgreso
 );
+router.post("/porcentaje", evaluacionController.savePorcentaje);
+
 module.exports = router;
 
 

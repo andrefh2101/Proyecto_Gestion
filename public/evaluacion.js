@@ -23,6 +23,40 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==============================
+// GUARDAR EVALUACIÓN + PORCENTAJE
+// ==============================
+document.getElementById("btnGuardar").addEventListener("click", async () => {
+    const porcentaje = totalItems === 0
+        ? 0
+        : Math.round((itemsCumplidos / totalItems) * 100);
+
+    try {
+        const res = await fetch("/api/evaluaciones/porcentaje", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                subcategoria_id,
+                porcentaje
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert("❌ Error al guardar porcentaje");
+            return;
+        }
+
+        alert(`✅ Evaluación guardada (${porcentaje}%)`);
+
+    } catch (err) {
+        console.error(err);
+        alert("❌ Error de conexión");
+    }
+});
+
+
+// ==============================
 // CARGAR MATRIZ
 // ==============================
 async function cargarDatos() {
