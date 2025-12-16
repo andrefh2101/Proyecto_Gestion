@@ -125,11 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombre = document.getElementById('nombreProyecto').value.trim();
     if (!nombre) return alert('Ingrese un nombre');
 
-    const res = await fetch('/crear-proyecto', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre })
-    });
+    const res = await fetch("/api/proyectos", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ nombre })
+});
+
 
     if (res.ok) location.reload();
     else alert('Error al crear el proyecto');
