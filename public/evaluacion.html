@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Matriz de Evaluación</title>
-
-  <!-- CSS externo -->
   <link rel="stylesheet" href="/css/estiloevaluacion.css">
 </head>
 
@@ -14,64 +12,72 @@
   <h2 id="tituloSubcategoria">Matriz de Evaluación</h2>
 </header>
 
-
+<!-- ===== PROGRESO ===== -->
 <section class="progreso">
   <div class="progreso-header">
     <span>Porcentaje de completación</span>
-    <strong id="porcentajeTexto"></strong>
+    <strong id="porcentajeTexto">0%</strong>
   </div>
 
   <div class="barra">
-    <div id="barraProgreso" class="barra-inner" style="width:0%">0%</div>
+    <div id="barraProgreso" class="barra-inner red">0%</div>
   </div>
 </section>
 
-<main id="contenedorTablas"></main>
+<!-- ===== MATRIZ ===== -->
+<main class="contenedor">
 
-<!-- 🔹 ACCIONES -->
+<table class="matriz">
+  <thead>
+    <tr>
+      <th>Ítem</th>
+      <th>Cumplió</th>
+      <th>Descripción</th>
+      <th>Observaciones</th>
+      <th>Fecha</th>
+      <th>Evidencia</th>
+    </tr>
+  </thead>
+
+  <tbody id="contenedorTablas">
+    <!-- evaluacion.js inserta aquí las filas -->
+  </tbody>
+</table>
+
+</main>
+
+<!-- ===== ACCIONES ===== -->
 <div class="acciones">
-  <!-- 🆕 BOTÓN VOLVER -->
-  <button id="btnVolver" class="secondary-btn">
-    ⬅ Volver a Subcategorías
-  </button>
-
-  <button id="btnGuardar" class="primary-btn">
-    💾 Guardar Evaluación
-  </button>
+  <button id="btnVolver" class="secondary-btn">⬅ Volver</button>
+  <button id="btnGuardar" class="primary-btn">💾 Guardar Evaluación</button>
 </div>
 
-<!-- 🔹 MODAL ALERTA -->
-<div id="alertaModal" class="alerta-modal">
-  <div class="alerta-box">
-    <div class="alerta-icon success">✔</div>
+<!-- ===== MODAL ALERTA ===== -->
+<div id="alertaModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-icon success">✔</div>
     <h3 id="alertaTitulo">Correcto</h3>
     <p id="alertaMensaje">Mensaje</p>
-    <button id="alertaBtn">Aceptar</button>
+    <button id="alertaBtn" class="primary-btn">Aceptar</button>
   </div>
 </div>
 
 <script src="evaluacion.js"></script>
 
-<!-- 🆕 SCRIPT VOLVER (NO TOCA evaluacion.js) -->
 <script>
   const query = new URLSearchParams(window.location.search);
-
   const area = query.get("area");
   const proyecto = query.get("proyecto");
-  const nombreSubcategoria = query.get("nombre");
+  const nombre = query.get("nombre");
 
-  /* ===== TÍTULO ===== */
-  if (nombreSubcategoria) {
-    document.getElementById("tituloSubcategoria").textContent = nombreSubcategoria;
+  if (nombre) {
+    document.getElementById("tituloSubcategoria").textContent = nombre;
   }
 
-  /* ===== BOTÓN VOLVER ===== */
   document.getElementById("btnVolver").addEventListener("click", () => {
     window.location.href = `/subcategorias.html?area=${area}&proyecto=${proyecto}`;
   });
 </script>
-
-
 
 </body>
 </html>

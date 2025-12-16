@@ -1,284 +1,183 @@
-/* ===============================
-   BASE
-================================ */
+/* ===== RESET ===== */
 * {
   box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
-body {
-  margin: 0;
-  background: #f4f6fb;
-  color: #1f2937;
-}
-
-/* ===============================
-   HEADER
-================================ */
+/* ===== HEADER ===== */
 .header {
   background: linear-gradient(135deg, #1e3a8a, #2563eb);
   color: white;
-  padding: 22px 40px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  padding: 20px;
+  text-align: center;
 }
 
-.header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-/* ===============================
-   PROGRESO
-================================ */
+/* ===== PROGRESO ===== */
 .progreso {
-  margin: 30px 40px;
   background: white;
-  padding: 22px 28px;
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  margin: 20px auto;
+  max-width: 1200px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.1);
 }
 
 .progreso-header {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 
 .barra {
+  height: 18px;
   background: #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
-  height: 18px;
 }
 
 .barra-inner {
   height: 100%;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  color: white;
-  font-size: 13px;
   text-align: center;
-  line-height: 18px;
-  border-radius: 12px;
-  transition: width 0.4s ease;
+  font-size: 12px;
+  color: white;
+  font-weight: 600;
+  transition: width .4s, background .4s;
 }
 
-/* ===============================
-   MAIN
-================================ */
-main {
-  padding: 10px 40px 40px;
+.barra-inner.red { background: #dc2626; }
+.barra-inner.yellow { background: #f59e0b; }
+.barra-inner.green { background: #16a34a; }
+
+/* ===== CONTENEDOR ===== */
+.contenedor {
+  max-width: 1200px;
+  margin: auto;
 }
 
-/* ===============================
-   TABLA MATRIZ
-================================ */
-table {
+/* ===== TABLA ===== */
+.matriz {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  border-radius: 16px;
+  margin-top: 20px;
+  table-layout: fixed;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.15);
-  animation: fadeUp 0.4s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
 }
 
-thead {
+.matriz th {
   background: #f1f5f9;
-}
-
-thead th {
-  padding: 14px;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #1e3a8a;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-tbody td {
-  padding: 14px;
+  padding: 12px;
   font-size: 14px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.matriz td {
+  padding: 12px;
   border-bottom: 1px solid #e5e7eb;
   vertical-align: middle;
+  font-size: 13px;
 }
 
-tbody tr:last-child td {
-  border-bottom: none;
-}
+/* COLUMNAS FIJAS */
+.matriz th:nth-child(1) { width: 22%; }
+.matriz th:nth-child(2) { width: 8%; }
+.matriz th:nth-child(3) { width: 18%; }
+.matriz th:nth-child(4) { width: 18%; }
+.matriz th:nth-child(5) { width: 12%; }
+.matriz th:nth-child(6) { width: 22%; }
 
-tbody tr:hover {
+/* SECCIONES */
+.section-row td {
   background: #f8fafc;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  font-size: 12px;
 }
 
-/* ===============================
-   INPUTS / SELECT
-================================ */
-select,
-input[type="text"],
-input[type="number"] {
+/* INPUTS */
+textarea {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
+  min-height: 60px;
+  resize: none;
+  border-radius: 6px;
   border: 1px solid #c7d2fe;
-  font-size: 14px;
-  background: white;
+  padding: 8px;
 }
 
-/* ===============================
-   ACCIONES
-================================ */
-.acciones {
-  display: flex;
-  justify-content: space-between;
-  padding: 25px 40px 35px;
+input[type="file"] {
+  width: 100%;
 }
 
-/* ===============================
-   BUTTONS
-================================ */
-.primary-btn,
-.secondary-btn {
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 14px;
+/* CUMPLIÓ */
+.center {
+  text-align: center;
   font-weight: 600;
+}
+
+/* ===== BOTONES ===== */
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.primary-btn {
-  background: linear-gradient(135deg, #2563eb, #1e3a8a);
-  color: white;
-}
-
-.primary-btn:hover {
-  transform: translateY(-2px);
 }
 
 .secondary-btn {
   background: #e5e7eb;
-  color: #1f2937;
-}
-
-.secondary-btn:hover {
-  background: #d1d5db;
-}
-
-/* ===============================
-   ALERT MODAL
-================================ */
-.alerta-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
-}
-
-.alerta-modal.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ===============================
-   ALERT BOX
-================================ */
-.alerta-box {
-  background: white;
-  padding: 35px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  box-shadow: 0 30px 70px rgba(0,0,0,0.35);
-  animation: scaleIn 0.35s ease;
-}
-
-.alerta-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  margin: 0 auto 15px;
-}
-
-.alerta-icon.success {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.alerta-box h3 {
-  margin: 10px 0;
-  color: #1e3a8a;
-}
-
-.alerta-box p {
-  color: #6b7280;
-  font-size: 15px;
-  margin-bottom: 18px;
-}
-
-.alerta-box button {
-  padding: 10px 20px;
-  border-radius: 10px;
+  padding: 10px 18px;
+  border-radius: 8px;
   border: none;
-  background: #2563eb;
-  color: white;
-  font-weight: 600;
   cursor: pointer;
 }
 
-/* ===============================
-   ANIMATIONS
-================================ */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== ACCIONES ===== */
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 25px auto;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  text-align: center;
+  width: 340px;
+  animation: scaleIn .3s;
+}
+
+.modal-icon {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.modal-icon.success {
+  color: #16a34a;
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
-@media (max-width: 768px) {
-  main {
-    padding: 20px;
-  }
-
-  .progreso {
-    margin: 20px;
-  }
-
-  .acciones {
-    flex-direction: column;
-    gap: 12px;
-  }
+  from { transform: scale(.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
