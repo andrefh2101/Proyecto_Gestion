@@ -1,193 +1,138 @@
-/* RESET BÁSICO */
+/* ===============================
+   RESET & BASE
+================================ */
 * {
   box-sizing: border-box;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
   margin: 0;
-  padding: 40px 24px;
-  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%);
+  background: #f4f6fb;
   color: #1f2937;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* HEADER */
+/* ===============================
+   HEADER
+================================ */
 .header {
-  max-width: 1200px;
-  margin: 0 auto 36px;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  padding: 22px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
 }
 
 .header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-/* GRID */
-.grid {
-  max-width: 1200px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-/* TARJETA */
-.project-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow:
-    0 8px 24px rgba(15, 23, 42, 0.06),
-    0 2px 6px rgba(15, 23, 42, 0.04);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.project-card:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    0 16px 40px rgba(15, 23, 42, 0.12),
-    0 4px 12px rgba(15, 23, 42, 0.06);
-}
-
-.project-card h3 {
-  margin: 0 0 6px;
-  font-size: 1.15rem;
+  margin: 0;
+  font-size: 26px;
   font-weight: 600;
 }
 
-.avance {
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-/* BOTONES */
-.btn-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-button {
+/* ===============================
+   BUTTONS
+================================ */
+.primary-btn,
+.secondary-btn,
+.danger-btn {
   border: none;
+  padding: 10px 18px;
   border-radius: 10px;
-  padding: 10px 16px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.1s ease;
+  transition: all 0.25s ease;
 }
 
-button:active {
-  transform: scale(0.97);
-}
-
-/* ESTADOS */
 .primary-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+  background: #ffffff;
+  color: #1e3a8a;
+  font-weight: 600;
 }
 
 .primary-btn:hover {
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+  background: #e0e7ff;
 }
 
 .secondary-btn {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #e5e7eb;
+  color: #1f2937;
 }
 
 .secondary-btn:hover {
-  background: #e2e8f0;
+  background: #d1d5db;
 }
 
 .danger-btn {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);
+  background: #dc2626;
+  color: white;
 }
 
 .danger-btn:hover {
-  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.35);
+  background: #b91c1c;
 }
 
-/* MODAL */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
+/* ===============================
+   MAIN GRID
+================================ */
+main {
+  padding: 40px;
 }
 
-.modal.show {
-  display: flex;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
 }
 
-.modal-content {
-  background: #ffffff;
-  padding: 28px;
+/* ===============================
+   PROJECT CARD
+================================ */
+.project-card {
+  background: white;
+  padding: 22px;
   border-radius: 18px;
-  width: 340px;
-  box-shadow:
-    0 30px 60px rgba(15, 23, 42, 0.25),
-    0 10px 20px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  animation: fadeUp 0.5s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.modal-content h3 {
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.2);
+}
+
+.project-card h3 {
   margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 1.25rem;
-  font-weight: 600;
+  margin-bottom: 18px;
+  color: #1e3a8a;
+  font-size: 20px;
 }
 
-.modal-content input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #cbd5f5;
-  font-size: 0.9rem;
-  margin: 16px 0 20px;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modal-content input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-.modal-actions {
+/* ===============================
+   CARD BUTTON GROUP
+================================ */
+.btn-group {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
 }
 
+/* ===============================
+   MODAL BASE
+================================ */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(15, 23, 42, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s ease;
-  z-index: 100;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
 }
 
 .modal.show {
@@ -195,31 +140,107 @@ button:active {
   pointer-events: auto;
 }
 
+/* ===============================
+   MODAL CONTENT
+================================ */
 .modal-content {
   background: white;
-  padding: 26px;
-  border-radius: 16px;
-  width: 360px;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-  transform: scale(0.95) translateY(10px);
-  transition: transform .25s ease;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  animation: scaleIn 0.35s ease;
 }
 
-.modal.show .modal-content {
-  transform: scale(1) translateY(0);
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #1e3a8a;
 }
 
-/* ===== LOADER ===== */
+/* ===============================
+   INPUT
+================================ */
+.modal-content input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #c7d2fe;
+  outline: none;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-content input:focus {
+  border-color: #2563eb;
+}
+
+/* ===============================
+   MODAL ACTIONS
+================================ */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ===============================
+   LOADER
+================================ */
 .loader {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255,255,255,0.4);
-  border-top: 3px solid white;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255,255,255,0.5);
+  border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
   display: inline-block;
 }
 
+/* ===============================
+   ANIMATIONS
+================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
 }

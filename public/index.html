@@ -1,122 +1,73 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <title>Gestión de Proyectos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenido a la Gestión de Proyectos</title>
-  <link rel="stylesheet" href="/style.css">
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-      margin: 0;
-      color: #333;
-    }
-
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-top: 30px;
-    }
-
-    p {
-      text-align: center;
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .btn-proyectos {
-      display: inline-block;
-      margin: 0 auto;
-      padding: 12px 25px;
-      background: #2563eb;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 18px;
-      transition: 0.25s;
-    }
-
-    .btn-proyectos:hover {
-      background: #1d4ed8;
-      transform: scale(1.05);
-    }
-
-    /* CONTENEDOR PRINCIPAL */
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      text-align: center;
-    }
-
-    /* TARJETA DE INTEGRANTES */
-    .integrantes-box {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 30px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-      animation: fadeIn 0.6s;
-    }
-
-    .integrantes-box h2 {
-      margin-bottom: 15px;
-      color: #1e3a8a;
-      font-size: 22px;
-    }
-
-    .integrantes-box ul {
-      list-style: none;
-      padding: 0;
-      text-align: left;
-      line-height: 1.7;
-    }
-
-    .integrantes-box li {
-      font-size: 16px;
-      padding: 6px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .integrantes-box li:last-child {
-      border-bottom: none;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Bienvenido a la Gestión de Proyectos</h1>
-
-    <p>Accede a la página para ver y gestionar tus proyectos</p>
-
-    <a class="btn-proyectos" href="/proyectos">Ver proyectos</a>
-
-    <div class="integrantes-box">
-      <h2>Integrantes del Grupo</h2>
-      <ul>
-        <li>Fernandez Huaman, Andre Rafael</li>
-        <li>Caballero Villazana, Diego Jeremy</li>
-        <li>Sevillano Colinas, Arian Erick</li>
-        <li>Huertas Gonzales, Dafne Huertas</li>
-        <li>Cañazaca Vasquez, Emily Lorena</li>
-        <li>Bonifacio Toledo, Dharma Elizabeth</li>
-      </ul>
-    </div>
+<header class="header">
+  <div class="header-left">
+    <img src="/img/logo.png" class="logo">
+    <span class="app-name">Gestión de Proyectos</span>
   </div>
+
+  <nav class="nav">
+    <a href="/">Inicio</a>
+    <a href="/proyectos">Proyectos</a>
+  </nav>
+</header>
+
+<section class="team">
+  <h2>Equipo de Trabajo</h2>
+
+  <div class="team-grid">
+    <div class="team-card">Fernandez Huaman, Andre Rafael</div>
+    <div class="team-card">Caballero Villazana, Diego Jeremy</div>
+    <div class="team-card">Sevillano Colinas, Arian Erick</div>
+    <div class="team-card">Huertas Gonzales, Dafne Huertas</div>
+    <div class="team-card">Cañazaca Vasquez, Emily Lorena</div>
+    <div class="team-card">Bonifacio Toledo, Dharma Elizabeth</div>
+  </div>
+</section>
+
+
+<main class="dashboard">
+
+  <section class="hero">
+    <h1>Bienvenido al Sistema</h1>
+    <p>Administra y controla el avance de tus proyectos</p>
+
+    <a href="/proyectos" class="btn-primary">
+      Ver Proyectos
+    </a>
+  </section>
+
+  <section class="cards">
+    <div class="card">
+      <h3>Organización</h3>
+      <p>Gestiona áreas, subcategorías y evaluaciones</p>
+    </div>
+
+    <div class="card">
+      <h3>Seguimiento</h3>
+      <p>Controla el avance y progreso de cada proyecto</p>
+    </div>
+
+    <div class="card">
+      <h3>Evidencias</h3>
+      <p>Sube y revisa documentos de evaluación</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>© 2025 Gestión de Proyectos · Ingeniería de Sistemas</p>
+</footer>
 
 </body>
 </html>
